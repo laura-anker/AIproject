@@ -157,25 +157,25 @@ class EdiblesOnePlayer(Scene):
             # The integer value of what will be the previous Y value
             prevY = self.apple.y
             # The integer value of what will be the new current X value. It is randomly generated
-            currX = myround(random.randint(0, self.w / 10 - 10 * self.director.scale), 10 * self.director.scale) * 10 + 1 * self.director.scale
+            currX = myround(random.randint(0, int(self.w / 10 - 10 * self.director.scale)), 10 * self.director.scale) * 10 + 1 * self.director.scale
             # This loop checks if the previous X value and the newly generated X value are the same, if so it will
             # generate a new one until they no longer match. This stops the apple from spawning in place
             while prevX == currX:
-                currX = myround(random.randint(0, self.w / 10 - 10 * self.director.scale), 10 * self.director.scale) * 10 + 1 * self.director.scale
+                currX = myround(random.randint(0, int(self.w / 10 - 10 * self.director.scale)), 10 * self.director.scale) * 10 + 1 * self.director.scale
             # The integer value of what will be the new current Y value. It is randomly generated
-            currY = myround(random.randint(0, self.h / 10 - 10 * self.director.scale), 10 * self.director.scale) * 10 + 1 * self.director.scale
+            currY = myround(random.randint(0, int(self.h / 10 - 10 * self.director.scale)), 10 * self.director.scale) * 10 + 1 * self.director.scale
             # This loop checks if the previous Y value and the newly generated Y value are the same, if so it will
             # generate a new one until they no longer match. This stops the apple from spawning in place
             while prevY == currY:
-                currY = myround(random.randint(0, self.h / 10 - 10 * self.director.scale), 10 * self.director.scale) * 10 + 1 * self.director.scale
+                currY = myround(random.randint(0, int(self.h / 10 - 10 * self.director.scale)), 10 * self.director.scale) * 10 + 1 * self.director.scale
             # The next 11 lines essentially do what the previous lines have except it checks each segements of the tail
             # so that the apple doesn't spawn in one of their spots
             for i in self.tail:
                 if currX == i.x and currY == i.y:
                     spaceEmpty = False
                     while not spaceEmpty and prevX != currX and prevY != currY:
-                        currX = myround(random.randint(0, self.w / 10 - 10 * self.director.scale), 10 * self.director.scale) * 10 + 1 * self.director.scale
-                        currY = myround(random.randint(0, self.h / 10 - 10 * self.director.scale), 10 * self.director.scale) * 10 + 1 * self.director.scale
+                        currX = myround(random.randint(0, int(self.w / 10 - 10 * self.director.scale)), 10 * self.director.scale) * 10 + 1 * self.director.scale
+                        currY = myround(random.randint(0, int(self.h / 10 - 10 * self.director.scale)), 10 * self.director.scale) * 10 + 1 * self.director.scale
                         for j in self.tail:
                             if currX == j.x and currY == j.y:
                                 spaceEmpty = False
