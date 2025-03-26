@@ -100,7 +100,7 @@ class TitleScreen(Scene):
         # change the scene to the third scene in the director's scenes array, the Two Player Mode
         if event.type == pygame.KEYDOWN and (event.key == pygame.K_RETURN or event.key == pygame.K_SPACE) and self.btnnum == 2:
             # Loads the song
-            pygame.mixer.music.load("musi/snakesong.wav")
+            pygame.mixer.music.load("music/snakesong.wav")
             # Plays the loaded song indefinitely
             pygame.mixer.music.play(-1)
             self.director.change_scene(self.director.scenes[2])
