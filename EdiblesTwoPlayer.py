@@ -164,6 +164,25 @@ class EdiblesTwoPlayer(Scene):
             # execute
             if self.plyrdraw or self.plyronewins or self.plyrtwowins:
                 return
+            
+            self.choose_move()
+            
+    def choose_move(self):
+        population = ['up', 'down', 'left', 'right', 'none']
+        weights = [0.12, 0.12, 0.12, 0.12, 0.52]
+        chosen_element = random.choices(population, weights=weights, k=1)[0]
+        if chosen_element == 'up' and self.dy1 == 0:
+            self.dy1 = -10 * self.director.scale
+            self.dx1 = 0
+        elif chosen_element == 'down' and self.dy1 == 0:
+            self.dy1 = 10 * self.director.scale
+            self.dx1 = 0
+        elif chosen_element == 'left' and self.dx1 == 0:
+            self.dx1 = -10 * self.director.scale
+            self.dy1 = 0
+        elif chosen_element == 'right' and self.dx1 == 0:
+            self.dx1 = 10 * self.director.scale
+            self.dy1 = 0
 
     def on_draw(self, screen):
         # Changes every pixel in the window to black. This is done to wipe the screen and set it up for drawing a new
@@ -224,6 +243,7 @@ class EdiblesTwoPlayer(Scene):
             #Draws an anti-aliased triangle outline with the points being at the specified coordinates
             gfxdraw.aatrigon(screen, 5 * self.director.scale, 15 * self.director.scale, 20 * self.director.scale, 22 * self.director.scale, 20 * self.director.scale, 8 * self.director.scale, (255, 150, 44))
             #pygame.mixer.music.stop()
+
 
     def print_tails(self, screen):
         # This draws each of the first snake's tail segments to the screen

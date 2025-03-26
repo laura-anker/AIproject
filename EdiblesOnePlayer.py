@@ -105,6 +105,25 @@ class EdiblesOnePlayer(Scene):
             self.head.color = self.director.p1color
             for i in self.tail:
                 i.color = self.director.p1color
+            
+            self.choose_move()
+
+    def choose_move(self):
+        population = ['up', 'down', 'left', 'right', 'none']
+        weights = [0.12, 0.12, 0.12, 0.12, 0.52]
+        chosen_element = random.choices(population, weights=weights, k=1)[0]
+        if chosen_element == 'up' and self.dy == 0:
+            self.dy = -10 * self.director.scale
+            self.dx = 0
+        elif chosen_element == 'down' and self.dy == 0:
+            self.dy = 10 * self.director.scale
+            self.dx = 0
+        elif chosen_element == 'left' and self.dx == 0:
+            self.dx = -10 * self.director.scale
+            self.dy = 0
+        elif chosen_element == 'right' and self.dx == 0:
+            self.dx = 10 * self.director.scale
+            self.dy = 0
 
     def on_draw(self, screen):
         # Changes every pixel in the window to black. This is done to wipe the screen and set it up for drawing a new
