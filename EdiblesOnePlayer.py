@@ -163,7 +163,7 @@ class EdiblesOnePlayer(Scene):
         
         # NUUUUU no moves... should never happen?
         if not possible_moves:
-            if not self.will_hit_wall(self.dx, self.dy):
+            if not self.will_hit_wall(self.dx, self.dy) and not self.will_hit_self(self.dx, self.dy):
                 possible_moves.append(('none', self.dx, self.dy))
         
         # we can go wee woo wee woo, going up then horz is boring
