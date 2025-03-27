@@ -167,22 +167,36 @@ class EdiblesTwoPlayer(Scene):
             
             self.choose_move()
             
+    def will_hit_wall(self, x, y, dx, dy):
+        new_x = x + dx
+        new_y = y + dy
+        if new_x < 0 or new_x >= self.w or new_y < 0 or new_y >= self.h:
+            return True
+        return False
+        
     def choose_move(self):
         population = ['up', 'down', 'left', 'right', 'none']
         weights = [0.12, 0.12, 0.12, 0.12, 0.52]
-        chosen_element = random.choices(population, weights=weights, k=1)[0]
-        if chosen_element == 'up' and self.dy1 == 0:
-            self.dy1 = -10 * self.director.scale
-            self.dx1 = 0
-        elif chosen_element == 'down' and self.dy1 == 0:
-            self.dy1 = 10 * self.director.scale
-            self.dx1 = 0
-        elif chosen_element == 'left' and self.dx1 == 0:
-            self.dx1 = -10 * self.director.scale
-            self.dy1 = 0
-        elif chosen_element == 'right' and self.dx1 == 0:
-            self.dx1 = 10 * self.director.scale
-            self.dy1 = 0
+        while True:
+            chosen_element = random.choices(population, weights=weights, k=1)[0]
+            if chosen_element == 'up' and self.dy1 == 0 and not self.will_hit_wall(self.head_1.x, self.head_1.y, 0, -10 * self.director.scale):
+                self.dy1 = -10 * self.director.scale
+                self.dx1 = 0
+                break
+            elif chosen_element == 'down' and self.dy1 == 0 and not self.will_hit_wall(self.head_1.x, self.head_1.y, 0, 10 * self.director.scale):
+                self.dy1 = 10 * self.director.scale
+                self.dx1 = 0
+                break
+            elif chosen_element == 'left' and self.dx1 == 0 and not self.will_hit_wall(self.head_1.x, self.head_1.y, -10 * self.director.scale, 0):
+                self.dx1 = -10 * self.director.scale
+                self.dy1 = 0
+                break
+            elif chosen_element == 'right' and self.dx1 == 0 and not self.will_hit_wall(self.head_1.x, self.head_1.y, 10 * self.director.scale, 0):
+                self.dx1 = 10 * self.director.scale
+                self.dy1 = 0
+                break
+            elif chosen_element == 'none':
+                break
 
     def on_draw(self, screen):
         # Changes every pixel in the window to black. This is done to wipe the screen and set it up for drawing a new

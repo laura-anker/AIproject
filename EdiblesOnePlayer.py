@@ -108,29 +108,39 @@ class EdiblesOnePlayer(Scene):
 
             self.choose_move()
 
-    def will_hit_wall(self, x, y, dx, dy):
-        new_x = x + dx
-        new_y = y + dy
-        if not self.screen_rect.collidepoint(new_x, new_y) and new_x < 0 or new_x >= self.w or new_y < 0 or new_y >= self.h:
-            return True
+    # checks if the next move will cause the snake to hit a wall
+    def will_hit_wall(self, dx, dy):
+        next_x = self.head.x + dx
+        next_y = self.head.y + dy
+        screen_width = self.director.screen.get_width()
+        screen_height = self.director.screen.get_height()
+        return next_x < 0 or next_x >= screen_width or next_y < 0 or next_y >= screen_height
+    
+    def will_hit_self(self, dx, dy):
+        next_x = self.head.x + dx
+        next_y = self.head.y + dy
+        for segment in self.tail:
+            if segment.x == next_x and segment.y == next_y:
+                return True
         return False
 
     def choose_move(self):
-        population = ['up', 'down', 'left', 'right', 'none']
-        weights = [0.12, 0.12, 0.12, 0.12, 0.52]
-        chosen_element = random.choices(population, weights=weights, k=1)[0]
-        if chosen_element == 'up' and self.dy == 0 and not self.will_hit_wall(self.head.x, self.head.y, 0, -10 * self.director.scale):
-            self.dy = -10 * self.director.scale
-            self.dx = 0
-        elif chosen_element == 'down' and self.dy == 0 and not self.will_hit_wall(self.head.x, self.head.y, 0, 10 * self.director.scale):
-            self.dy = 10 * self.director.scale
-            self.dx = 0
-        elif chosen_element == 'left' and self.dx == 0 and not self.will_hit_wall(self.head.x, self.head.y, -10 * self.director.scale, 0):
-            self.dx = -10 * self.director.scale
-            self.dy = 0
-        elif chosen_element == 'right' and self.dx == 0 and not self.will_hit_wall(self.head.x, self.head.y, 10 * self.director.scale, 0):
-            self.dx = 10 * self.director.scale
-            self.dy = 0
+        possible_moves = []
+        
+        if not self.will_hit_wall(0, -10 * self.director.scale) and self.dy == 0 and not self.will_hit_self(0, -10 * self.director.scale):
+            possible_moves.append(('up', 0, -10 * self.director.scale))
+        if not self.will_hit_wall(0, 10 * self.director.scale) and self.dy == 0 and not self.will_hit_self(0, 10 * self.director.scale):
+            possible_moves.append(('down', 0, 10 * self.director.scale))
+        if not self.will_hit_wall(-10 * self.director.scale, 0) and self.dx == 0 and not self.will_hit_self(-10 * self.director.scale, 0):
+            possible_moves.append(('left', -10 * self.director.scale, 0))
+        if not self.will_hit_wall(10 * self.director.scale, 0) and self.dx == 0 and not self.will_hit_self(10 * self.director.scale, 0):
+            possible_moves.append(('right', 10 * self.director.scale, 0))
+        if not self.will_hit_wall(self.dx, self.dy):
+            possible_moves.append(('none', self.dx, self.dy))
+        # so it doesn't crash at the last possible moment...
+        if possible_moves:
+            move = random.choice(possible_moves)
+            self.dx, self.dy = move[1], move[2]
 
     def on_draw(self, screen):
         # Changes every pixel in the window to black. This is done to wipe the screen and set it up for drawing a new
