@@ -105,23 +105,30 @@ class EdiblesOnePlayer(Scene):
             self.head.color = self.director.p1color
             for i in self.tail:
                 i.color = self.director.p1color
-            
+
             self.choose_move()
+
+    def will_hit_wall(self, x, y, dx, dy):
+        new_x = x + dx
+        new_y = y + dy
+        if not self.screen_rect.collidepoint(new_x, new_y) and new_x < 0 or new_x >= self.w or new_y < 0 or new_y >= self.h:
+            return True
+        return False
 
     def choose_move(self):
         population = ['up', 'down', 'left', 'right', 'none']
         weights = [0.12, 0.12, 0.12, 0.12, 0.52]
         chosen_element = random.choices(population, weights=weights, k=1)[0]
-        if chosen_element == 'up' and self.dy == 0:
+        if chosen_element == 'up' and self.dy == 0 and not self.will_hit_wall(self.head.x, self.head.y, 0, -10 * self.director.scale):
             self.dy = -10 * self.director.scale
             self.dx = 0
-        elif chosen_element == 'down' and self.dy == 0:
+        elif chosen_element == 'down' and self.dy == 0 and not self.will_hit_wall(self.head.x, self.head.y, 0, 10 * self.director.scale):
             self.dy = 10 * self.director.scale
             self.dx = 0
-        elif chosen_element == 'left' and self.dx == 0:
+        elif chosen_element == 'left' and self.dx == 0 and not self.will_hit_wall(self.head.x, self.head.y, -10 * self.director.scale, 0):
             self.dx = -10 * self.director.scale
             self.dy = 0
-        elif chosen_element == 'right' and self.dx == 0:
+        elif chosen_element == 'right' and self.dx == 0 and not self.will_hit_wall(self.head.x, self.head.y, 10 * self.director.scale, 0):
             self.dx = 10 * self.director.scale
             self.dy = 0
 
