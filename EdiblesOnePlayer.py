@@ -106,7 +106,7 @@ class EdiblesOnePlayer(Scene):
             for i in self.tail:
                 i.color = self.director.p1color
 
-            self.choose_move()
+            self.choose_move_apple()
 
     # checks if the next move will cause the snake to hit a wall
     def will_hit_wall(self, dx, dy):
@@ -138,6 +138,35 @@ class EdiblesOnePlayer(Scene):
         if not self.will_hit_wall(self.dx, self.dy):
             possible_moves.append(('none', self.dx, self.dy))
         # so it doesn't crash at the last possible moment...
+        if possible_moves:
+            move = random.choice(possible_moves)
+            self.dx, self.dy = move[1], move[2]
+
+    def choose_move_apple(self):
+        possible_moves = []
+        
+        # APPLE
+        dx_to_apple = self.apple.x - self.head.x
+        dy_to_apple = self.apple.y - self.head.y
+        
+        # snek go sideways
+        if dx_to_apple > 0 and not self.will_hit_wall(10 * self.director.scale, 0) and not self.will_hit_self(10 * self.director.scale, 0):
+            possible_moves.append(('right', 10 * self.director.scale, 0))
+        elif dx_to_apple < 0 and not self.will_hit_wall(-10 * self.director.scale, 0) and not self.will_hit_self(-10 * self.director.scale, 0):
+            possible_moves.append(('left', -10 * self.director.scale, 0))
+        
+        # snek go up down up down
+        if dy_to_apple > 0 and not self.will_hit_wall(0, 10 * self.director.scale) and not self.will_hit_self(0, 10 * self.director.scale):
+            possible_moves.append(('down', 0, 10 * self.director.scale))
+        elif dy_to_apple < 0 and not self.will_hit_wall(0, -10 * self.director.scale) and not self.will_hit_self(0, -10 * self.director.scale):
+            possible_moves.append(('up', 0, -10 * self.director.scale))
+        
+        # NUUUUU no moves... should never happen?
+        if not possible_moves:
+            if not self.will_hit_wall(self.dx, self.dy):
+                possible_moves.append(('none', self.dx, self.dy))
+        
+        # we can go wee woo wee woo, going up then horz is boring
         if possible_moves:
             move = random.choice(possible_moves)
             self.dx, self.dy = move[1], move[2]
