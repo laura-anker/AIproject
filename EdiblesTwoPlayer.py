@@ -3,6 +3,7 @@ from Entity import *
 import random
 from pygame import gfxdraw
 from PAdLib import rrect
+from util import GameState
 
 class EdiblesTwoPlayer(Scene):
     def __init__(self, director):
@@ -55,6 +56,8 @@ class EdiblesTwoPlayer(Scene):
         # This starts off the second player's snake with two tail segments
         for i in range(1, 3):
             self.tail_2.append(Entity(self.head_2.x + 10 * i * director.scale, self.head_2.y * director.scale, 9 * director.scale, 9 * director.scale, self.director.p2color))
+
+        self.game_state = GameState(self)
 
     def on_event(self, event):
         # This conditional statement that if either the W key is pressed down and if the first player's snake
@@ -170,8 +173,13 @@ class EdiblesTwoPlayer(Scene):
     def will_hit_wall(self, x, y, dx, dy):
         new_x = x + dx
         new_y = y + dy
+        # using the new util game state class
+        wall_positions = self.game_state.get_wall_positions()
         if new_x < 0 or new_x >= self.w or new_y < 0 or new_y >= self.h:
             return True
+        for wall_x, wall_y in wall_positions:
+            if new_x == wall_x and new_y == wall_y:
+                return True
         return False
         
     def choose_move(self):
