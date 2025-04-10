@@ -4,6 +4,7 @@ import random
 from pygame import gfxdraw
 from PAdLib import rrect
 from util import GameState
+from SnakeUtil import Snake
 
 class EdiblesTwoPlayer(Scene):
     def __init__(self, director):
@@ -58,6 +59,7 @@ class EdiblesTwoPlayer(Scene):
             self.tail_2.append(Entity(self.head_2.x + 10 * i * director.scale, self.head_2.y * director.scale, 9 * director.scale, 9 * director.scale, self.director.p2color))
 
         self.game_state = GameState(self)
+        self.snake = Snake(self.game_state)
 
     def on_event(self, event):
         # This conditional statement that if either the W key is pressed down and if the first player's snake
@@ -168,43 +170,8 @@ class EdiblesTwoPlayer(Scene):
             if self.plyrdraw or self.plyronewins or self.plyrtwowins:
                 return
             
-            self.choose_move()
-            
-    def will_hit_wall(self, x, y, dx, dy):
-        new_x = x + dx
-        new_y = y + dy
-        # using the new util game state class
-        wall_positions = self.game_state.get_wall_positions()
-        if new_x < 0 or new_x >= self.w or new_y < 0 or new_y >= self.h:
-            return True
-        for wall_x, wall_y in wall_positions:
-            if new_x == wall_x and new_y == wall_y:
-                return True
-        return False
-        
-    def choose_move(self):
-        population = ['up', 'down', 'left', 'right', 'none']
-        weights = [0.12, 0.12, 0.12, 0.12, 0.52]
-        while True:
-            chosen_element = random.choices(population, weights=weights, k=1)[0]
-            if chosen_element == 'up' and self.dy1 == 0 and not self.will_hit_wall(self.head_1.x, self.head_1.y, 0, -10 * self.director.scale):
-                self.dy1 = -10 * self.director.scale
-                self.dx1 = 0
-                break
-            elif chosen_element == 'down' and self.dy1 == 0 and not self.will_hit_wall(self.head_1.x, self.head_1.y, 0, 10 * self.director.scale):
-                self.dy1 = 10 * self.director.scale
-                self.dx1 = 0
-                break
-            elif chosen_element == 'left' and self.dx1 == 0 and not self.will_hit_wall(self.head_1.x, self.head_1.y, -10 * self.director.scale, 0):
-                self.dx1 = -10 * self.director.scale
-                self.dy1 = 0
-                break
-            elif chosen_element == 'right' and self.dx1 == 0 and not self.will_hit_wall(self.head_1.x, self.head_1.y, 10 * self.director.scale, 0):
-                self.dx1 = 10 * self.director.scale
-                self.dy1 = 0
-                break
-            elif chosen_element == 'none':
-                break
+            self.snake.choose_move_toward_apple()
+            self.dx1, self.dy1 = self.snake.dx, self.snake.dy
 
     def on_draw(self, screen):
         # Changes every pixel in the window to black. This is done to wipe the screen and set it up for drawing a new

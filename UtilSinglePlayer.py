@@ -2,10 +2,10 @@ from Entity import Entity
 
 class GameState:
     def __init__(self, edibles_two_player_scene):
-        self.head = edibles_two_player_scene.head_1
-        self.tail = edibles_two_player_scene.tail_1
-        self.dx = edibles_two_player_scene.dx1
-        self.dy = edibles_two_player_scene.dy1
+        self.head = edibles_two_player_scene.head
+        self.tail = edibles_two_player_scene.tail
+        self.dx = edibles_two_player_scene.dx
+        self.dy = edibles_two_player_scene.dy
         self.apple = edibles_two_player_scene.apple
         self.walls = self.get_walls(edibles_two_player_scene.w, edibles_two_player_scene.h, edibles_two_player_scene.director.scale)
         self.scale = edibles_two_player_scene.director.scale

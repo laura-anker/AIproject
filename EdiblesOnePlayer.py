@@ -3,6 +3,8 @@ from Entity import *
 import random
 from PAdLib import rrect
 from pygame import gfxdraw
+from UtilSinglePlayer import GameState
+from SnakeUtil import Snake
 
 # This class represents the standard One Player Mode of Snake. The player starts off with two tail segments and must
 # move around the grid, trying to eat more apples so that it can gain more segments. If it collides with the edge of the
@@ -38,6 +40,9 @@ class EdiblesOnePlayer(Scene):
         # This starts off the snake with two tail segments
         for i in range(1, 3):
             self.tail.append(Entity(self.head.x - 10 * i * director.scale, self.head.y * director.scale, 9 * director.scale, 9 * director.scale, self.director.p1color))
+
+        self.game_state = GameState(self)
+        self.snake = Snake(self.game_state)
 
     def on_event(self, event):
         # This conditional statement that if either the W or Up key is pressed down and if the snake is not moving on
@@ -106,70 +111,8 @@ class EdiblesOnePlayer(Scene):
             for i in self.tail:
                 i.color = self.director.p1color
 
-            self.choose_move_apple()
-
-    # checks if the next move will cause the snake to hit a wall
-    def will_hit_wall(self, dx, dy):
-        next_x = self.head.x + dx
-        next_y = self.head.y + dy
-        screen_width = self.director.screen.get_width()
-        screen_height = self.director.screen.get_height()
-        return next_x < 0 or next_x >= screen_width or next_y < 0 or next_y >= screen_height
-    
-    def will_hit_self(self, dx, dy):
-        next_x = self.head.x + dx
-        next_y = self.head.y + dy
-        for segment in self.tail:
-            if segment.x == next_x and segment.y == next_y:
-                return True
-        return False
-
-    def choose_move(self):
-        possible_moves = []
-        
-        if not self.will_hit_wall(0, -10 * self.director.scale) and self.dy == 0 and not self.will_hit_self(0, -10 * self.director.scale):
-            possible_moves.append(('up', 0, -10 * self.director.scale))
-        if not self.will_hit_wall(0, 10 * self.director.scale) and self.dy == 0 and not self.will_hit_self(0, 10 * self.director.scale):
-            possible_moves.append(('down', 0, 10 * self.director.scale))
-        if not self.will_hit_wall(-10 * self.director.scale, 0) and self.dx == 0 and not self.will_hit_self(-10 * self.director.scale, 0):
-            possible_moves.append(('left', -10 * self.director.scale, 0))
-        if not self.will_hit_wall(10 * self.director.scale, 0) and self.dx == 0 and not self.will_hit_self(10 * self.director.scale, 0):
-            possible_moves.append(('right', 10 * self.director.scale, 0))
-        if not self.will_hit_wall(self.dx, self.dy):
-            possible_moves.append(('none', self.dx, self.dy))
-        # so it doesn't crash at the last possible moment...
-        if possible_moves:
-            move = random.choice(possible_moves)
-            self.dx, self.dy = move[1], move[2]
-
-    def choose_move_apple(self):
-        possible_moves = []
-        
-        # APPLE
-        dx_to_apple = self.apple.x - self.head.x
-        dy_to_apple = self.apple.y - self.head.y
-        
-        # snek go sideways
-        if dx_to_apple > 0 and not self.will_hit_wall(10 * self.director.scale, 0) and not self.will_hit_self(10 * self.director.scale, 0):
-            possible_moves.append(('right', 10 * self.director.scale, 0))
-        elif dx_to_apple < 0 and not self.will_hit_wall(-10 * self.director.scale, 0) and not self.will_hit_self(-10 * self.director.scale, 0):
-            possible_moves.append(('left', -10 * self.director.scale, 0))
-        
-        # snek go up down up down
-        if dy_to_apple > 0 and not self.will_hit_wall(0, 10 * self.director.scale) and not self.will_hit_self(0, 10 * self.director.scale):
-            possible_moves.append(('down', 0, 10 * self.director.scale))
-        elif dy_to_apple < 0 and not self.will_hit_wall(0, -10 * self.director.scale) and not self.will_hit_self(0, -10 * self.director.scale):
-            possible_moves.append(('up', 0, -10 * self.director.scale))
-        
-        # NUUUUU no moves... should never happen?
-        if not possible_moves:
-            if not self.will_hit_wall(self.dx, self.dy) and not self.will_hit_self(self.dx, self.dy):
-                possible_moves.append(('none', self.dx, self.dy))
-        
-        # we can go wee woo wee woo, going up then horz is boring
-        if possible_moves:
-            move = random.choice(possible_moves)
-            self.dx, self.dy = move[1], move[2]
+            self.snake.choose_move_toward_apple()
+            self.dx, self.dy = self.snake.dx, self.snake.dy
 
     def on_draw(self, screen):
         # Changes every pixel in the window to black. This is done to wipe the screen and set it up for drawing a new
