@@ -18,9 +18,9 @@ class EdiblesTwoPlayer(Scene):
         # A surface with the text "Draw..." printed on it using the font named "font"
         self.draw_txt = director.font.render("Draw...", True, (255, 255, 255))
         # A surface with the text "Player One Wins" printed on it using the font named "font"
-        self.plyronewins_txt = director.font.render("Player One Wins", True, (255, 255, 255))
+        self.plyronewins_txt = director.font.render("AI wins", True, (255, 255, 255))
         # A surface with the text "Player Two Wins" printed on it using the font named "font"
-        self.plyrtwowins_txt = director.font.render("Player Two Wins", True, (255, 255, 255))
+        self.plyrtwowins_txt = director.font.render("You win!", True, (255, 255, 255))
         # A surface with the text "Draw" printed on it using the font named "font"
         self.plyrdraw_txt = director.font.render("Draw", True, (255, 255, 255))
         # This is a rectangle object with the size being the same as the size of the game window size
@@ -32,13 +32,13 @@ class EdiblesTwoPlayer(Scene):
 
         # These variables hold the width and height of the game window, respectively
         self.w, self.h = pygame.display.get_surface().get_size()
-        # The change in x value of the first player's snake
+        # The change in x value of the first player's snake - positive means going right, negative left
         self.dx1 = 10 * director.scale
-        # The change in y value of the first player's snake
+        # The change in y value of the first player's snake - positive means going down, negative up
         self.dy1 = 0
-        # The change in x value of the second player's snake
+        # The change in x value of the second player's snake - positive means going right, negative left
         self.dx2 = -10 * director.scale
-        # The change in y value of the second player's snake
+        # The change in y value of the second player's snake - positive means going down, negative up
         self.dy2 = 0
         # The Entity object representing the head of the first player's snake
         self.head_1 = Entity(21 * director.scale, 1 * director.scale, 9 * director.scale, 9 * director.scale, director.p1color)
@@ -338,6 +338,7 @@ class EdiblesTwoPlayer(Scene):
         # This conditional statement checks if the head of the two snakes occupy the same space. If so it sets the
         # player draw variable to true and ends the execution of the method
         if self.head_1.x == self.head_2.x and self.head_1.y == self.head_2.y:
+            #print(f"draw dx1 "+str(self.dx1)+" dx2 "+str(self.dx2)+" dy1 "+str(self.dy1)+" dy2 "+str(self.dy2))
             self.plyrdraw = True
             # Causes the currently playing song to stop playing
             pygame.mixer.music.stop()
@@ -348,6 +349,7 @@ class EdiblesTwoPlayer(Scene):
             # This conditional statement checks if the current tail segment and the head of the second snake occupy the
             # same space. If so it sets the player one wins variable to true
             if self.head_2.x == i.x and self.head_2.y == i.y:
+                #print(f"ai wins dx1 "+str(self.dx1)+" dx2 "+str(self.dx2)+" dy1 "+str(self.dy1)+" dy2 "+str(self.dy2))
                 self.plyronewins = True
                 # Causes the currently playing song to stop playing
                 pygame.mixer.music.stop()
@@ -355,6 +357,7 @@ class EdiblesTwoPlayer(Scene):
             # This conditional statement checks if the first snake's head has gone out of bounds and if so then it sets
             # the player two wins variable to true
             if self.head_1.x == i.x and self.head_1.y == i.y or self.head_1.x < 0 or self.head_1.x > self.w or self.head_1.y < 0 or self.head_1.y > self.h:
+                #print(f"ai wins dx1 "+str(self.dx1)+" dx2 "+str(self.dx2)+" dy1 "+str(self.dy1)+" dy2 "+str(self.dy2))
                 self.plyrtwowins = True
                 # Causes the currently playing song to stop playing
                 pygame.mixer.music.stop()
@@ -365,6 +368,7 @@ class EdiblesTwoPlayer(Scene):
             # This conditional statement checks if the current tail segment and the head of the first snake occupy the
             # same space. If so it sets the player two wins variable to true
             if self.head_1.x == i.x and self.head_1.y == i.y:
+                #print(f"player wins dx1 "+str(self.dx1)+" dx2 "+str(self.dx2)+" dy1 "+str(self.dy1)+" dy2 "+str(self.dy2))
                 self.plyrtwowins = True
                 # Causes the currently playing song to stop playing
                 pygame.mixer.music.stop()
@@ -372,6 +376,7 @@ class EdiblesTwoPlayer(Scene):
             # This conditional statement checks if the second snake's head has gone out of bounds and if so then it sets
             # the player one wins variable to true
             if self.head_2.x == i.x and self.head_2.y == i.y or self.head_2.x < 0 or self.head_2.x > self.w or self.head_2.y < 0 or self.head_2.y > self.h:
+                #print(f"player wins dx1 "+str(self.dx1)+" dx2 "+str(self.dx2)+" dy1 "+str(self.dy1)+" dy2 "+str(self.dy2))
                 self.plyronewins = True
                 # Causes the currently playing song to stop playing
                 pygame.mixer.music.stop()
