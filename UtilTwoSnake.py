@@ -127,7 +127,18 @@ class GameState:
             if self.me_head.x == i.x and self.me_head.y == i.y or self.me_head.x < 0 or self.me_head.x > self.w or self.me_head.y < 0 or self.me_head.y > self.h:
                 return True
         return False
-
+    
+    # returns an action
+    def monte_carlo_tree_search(state):
+        # tree ‹ NODE(state)
+        # while Is-TIME-REMAINING) do
+            # leaf ‹ SELECT(tree)
+            # child ‹ ExPaND(leaf)
+            # result < SIMULATE(child)
+            # BACK-PROPAGATE(result, child)
+        # return the move in ACTIONS(state) whose node has highest number of playouts
+        return
+    
     #checks if it's a draw
     def isDraw(self):
         if self.opp_head.x == self.me_head.x and self.opp_head.y == self.me_head.y:
