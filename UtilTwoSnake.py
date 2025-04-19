@@ -1,8 +1,12 @@
 '''opponent snake is player/player 1, me is the ai/player 2'''
 from Entity import Entity
+from OppSnakeUtil import Opp_Snake
+from MeSnakeUtil import Me_Snake
 
 class GameState:
     def __init__(self, edibles_two_player_scene):
+        # Store this for deep copying
+        self.edibles_two_player_scene = edibles_two_player_scene
         self.opp_head = edibles_two_player_scene.head_1
         self.me_head = edibles_two_player_scene.head_2
         self.opp_tail = edibles_two_player_scene.tail_1
@@ -19,6 +23,48 @@ class GameState:
         self.h = edibles_two_player_scene.h
         self.scale = edibles_two_player_scene.director.scale
         self.screen = edibles_two_player_scene.director.screen
+
+    # Just a nice function to have
+    def print(self):
+        print(f"""
+        === Snake Positions & Directions ===
+                    Format: dx, dy
+        Opponent:
+        Head: {self.opp_head.x}, {self.opp_head.y}
+        Tail: NOT IMPLEMENTED
+        Direction: {self.opp_dx}, {self.opp_dy}
+
+        Me:
+        Head: {self.me_head.x, self.me_head.y}
+        Tail: NOT IMPLEMENTED
+        Direction: {self.me_dx}, {self.me_dy}
+
+        Apple Position: {self.apple.x}, {self.apple.y}
+        """)
+    
+    # DON'T USE THE self.edibles_two_player_scene VARIABLE (I THINK?)
+        # Basically, we only need the information inside gamestate to simulate,
+        # why make it hard for us and copy that information to another place when we don't have to,
+        # so I didn't implement the updating of that when copying at all.
+        # One can change that here and when generating successors if one needs to
+    def deep_copy(self):
+        copied_game_state = GameState(self.edibles_two_player_scene)
+        copied_game_state.edibles_two_player_scene = self.edibles_two_player_scene
+        copied_game_state.opp_head = self.opp_head
+        copied_game_state.me_head = self.me_head
+        copied_game_state.opp_tail = self.opp_tail
+        copied_game_state.me_tail = self.me_tail
+        copied_game_state.opp_dx = self.opp_dx
+        copied_game_state.opp_dy = self.opp_dy
+        copied_game_state.me_dx = self.me_dx
+        copied_game_state.me_dy = self.me_dy
+        copied_game_state.apple = self.apple
+        copied_game_state.walls = self.walls
+        copied_game_state.w = self.w
+        copied_game_state.h = self.h
+        copied_game_state.scale = self.scale
+        copied_game_state.screen = self.screen
+        return copied_game_state
 
     def get_walls(self, width, height, scale):
         walls = []
@@ -145,24 +191,93 @@ class GameState:
             return True
         return False
     
+    # Potentially two ways to implement this: create a new gamestate and snakemove class instance
+    # and just use htose or re-implement the logic, let's try the first one first
+    # DON'T USE THE self.edibles_two_player_scene VARIABLE (I THINK?)
+        # Basically, we only need the information inside gamestate to simulate,
+        # why make it hard for us and copy that information to another place when we don't have to,
+        # so I didn't implement the updating of that when copying at all
     #returns resulting state given (dx, dy) action for the given agent snake (1  = opp/player, 2 = ai)
-    def generateSuccessor(self, agent, action):
+    def generateSuccessors(self):
         # Check that successors exist
         if self.isWin() or self.isLose() or self.isDraw(): raise Exception('Can\'t generate a successor of a terminal state.')
-        #copy current state
-        state = GameState(self)
+        # *hard* copy current state
+        state = self.deep_copy()
+        # make snake class instances to hold both snakes
+        snake_me = Me_Snake(state)
+        snake_opp = Opp_Snake(state)
+        # List storing all possible successor states
+        potential_successors = []
 
-        #move agent based on action
-        if agent == 1:
-            state.opp_dx = action[0]
-            state.opp_dy = action[1]
-        if agent == 2:
-            state.me_dx = action[0]
-            state.me_dy = action[1]
-        #we don't know what the other agent's action will be??
+        # Have agents make one random move
+        potential_moves = ["up", "down", "left", "right"]
+        # Iterate through, generating a next state for each potential move for each agent
+        # (Any combination of either agent's move)
+        for move_me in potential_moves:
+            for move_opp in potential_moves:
+                # Have a fresh copy of our snkae and game state
+                potential_snake_me_state = snake_me.deep_copy()
+                potential_snake_opp_state = snake_opp.deep_copy()
+                potential_game_state = state.deep_copy()
+                # Update a hard copied snake, update a hard copied gamestate in that snake
+                potential_snake_me_state.make_move(move_me)
+                potential_snake_opp_state.make_move(move_opp)
+                potential_game_state.me_dx = potential_snake_me_state.dx
+                potential_game_state.me_dy = potential_snake_me_state.dy
+                potential_game_state.opp_dx = potential_snake_opp_state.dx
+                potential_game_state.opp_dy = potential_snake_opp_state.dy
+                # Okay, so above we edited the snake's directions, now we have
+                # to move the snakes forward one time step
 
-        #check if apple was eaten
-            #if so move apple???? - this will be random
+                # Check if apple was eaten, if it was replace it using the game logic found in
+                # ediblestwoplayer in our state variable above so next time it's
+                # copied, it's copied with the new apple, and add one to the length of
+                # the snake that ate it
+                
+                # Check if the game ended. If so, return a state that displays that.
 
+                # add the generated potential state to potential_successors
+                potential_successors.append(potential_game_state)
 
+        return potential_successors
 
+    # Increments the snakes based on the direciton they are moving by one time step (or update)
+    def step(self):
+        # Update using logic similar to what the pre-existing update function already does
+        # which is copied below. Just have to edit it for use with a gamestate?
+        # Also need to pass in the snakes?
+
+        # update position of the first tail's elements
+        # for i in range(len(self.tail_1) - 1, 0, -1):
+        #     self.tail_1[i].x = self.tail_1[i - 1].x
+        #     self.tail_1[i].y = self.tail_1[i - 1].y
+        # self.tail_1[0].x, self.tail_1[0].y = (self.head_1.x, self.head_1.y)
+        # # The following two lines update the x and y position of the first snake's head
+        # self.head_1.x += self.dx1
+        # self.head_1.y += self.dy1
+        # # The following three lines ensure that the head and tail of the snake are the proper color as the color
+        # # can change if the player picks a new color on the configuration screen
+        # self.head_1.color = self.director.p1color
+        # for i in self.tail_1:
+        #     i.color = self.director.p1color
+        # # Calling of the is_collide function
+        # self.is_collide()
+        # # Checks if any of the game win / game over states and have been met and if so then the function ceases to
+        # # execute
+        # if self.plyrdraw or self.plyronewins or self.plyrtwowins:
+        #     return
+        # # update position of the second tail's elements
+        # for i in range(len(self.tail_2) - 1, 0, -1):
+        #     self.tail_2[i].x = self.tail_2[i - 1].x
+        #     self.tail_2[i].y = self.tail_2[i - 1].y
+        # self.tail_2[0].x, self.tail_2[0].y = (self.head_2.x, self.head_2.y)
+        # # The following two lines update the x and y position of the first snake's head
+        # self.head_2.x += self.dx2
+        # self.head_2.y += self.dy2
+        # # The following three lines ensure that the head and tail of the snake are the proper color as the color
+        # # can change if the player picks a new color on the configuration screen
+        # self.head_2.color = self.director.p2color
+        # for i in self.tail_2:
+        #     i.color = self.director.p2color
+        # # Calling of the is_collide function
+        # self.is_collide()

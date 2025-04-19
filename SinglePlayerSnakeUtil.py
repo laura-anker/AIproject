@@ -11,17 +11,45 @@ class Snake:
         self.apple = game_state.apple
         self.screen = game_state.screen
 
+    def deep_copy(self):
+        # Return a Me_Snake instantiated using the existing game_state
+        # in this copy of Me_Snake. Should be the same information, if not
+        # copy each other piece of information individually afterwords, like
+        # dont in utiltwosnake's gamestate class
+        return Snake(self.game_state)
+
     def will_hit_wall(self, dx, dy):
         next_x = self.head.x + dx
         next_y = self.head.y + dy
         screen_width = self.screen.get_width()
         screen_height = self.screen.get_height()
         return next_x < 0 or next_x >= screen_width or next_y < 0 or next_y >= screen_height
-
+    
     def will_hit_self(self, dx, dy):
         next_x = self.head.x + dx
         next_y = self.head.y + dy
         return any(segment.x == next_x and segment.y == next_y for segment in self.tail)
+
+    # takes in a string, move, and returns the new state having made that move
+    def make_move(self, move):
+        directions = [
+            ("up", 0, -10 * self.scale),
+            ("down", 0, 10 * self.scale),
+            ("left", -10 * self.scale, 0),
+            ("right", 10 * self.scale, 0)
+        ]
+        if move == directions[0][0]:
+            self.dx, self.dy = directions[0][1], directions[0][2]
+            return self
+        if move == directions[1][0]:
+            self.dx, self.dy = directions[1][1], directions[1][2]
+            return self
+        if move == directions[2][0]:
+            self.dx, self.dy = directions[2][1], directions[2][2]
+            return self
+        if move == directions[3][0]:
+            self.dx, self.dy = directions[3][1], directions[3][2]
+            return self
 
     def possible_moves(self):
         moves = []

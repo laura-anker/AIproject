@@ -3,11 +3,14 @@ from Entity import *
 import random
 from pygame import gfxdraw
 from PAdLib import rrect
-from util import GameState
-from SnakeUtil import Snake
+from UtilTwoSnake import GameState
+from OppSnakeUtil import Opp_Snake
+from MeSnakeUtil import Me_Snake
+import time
 
 class EdiblesTwoPlayer(Scene):
     def __init__(self, director):
+        # Should make everything below rely soley on the gamestate: I think?
         Scene.__init__(self, director)
         # Boolean value that tells whether or not player one has won
         self.plyronewins = False
@@ -59,7 +62,8 @@ class EdiblesTwoPlayer(Scene):
             self.tail_2.append(Entity(self.head_2.x + 10 * i * director.scale, self.head_2.y * director.scale, 9 * director.scale, 9 * director.scale, self.director.p2color))
 
         self.game_state = GameState(self)
-        self.snake = Snake(self.game_state)
+        self.snake_me = Me_Snake(self.game_state)
+        self.snake_opp = Opp_Snake(self.game_state)
 
     def on_event(self, event):
         # This conditional statement that if either the W key is pressed down and if the first player's snake
@@ -127,6 +131,31 @@ class EdiblesTwoPlayer(Scene):
         # This conditional statement checks to see if none of the win states have been met, and if so, execute the
         # following code
         if not self.plyronewins and not self.plyrtwowins and not self.plyrdraw:
+
+            ###### START OF OUR CODE
+            # OHHHHHH I THINK OUR CODE HAS TO adjust the snake direction BEFORE
+            # stepping forward, I think the snake was dying before becuase
+            # it was moving one step behind the update! So I moved all this
+            # code up above everything else at the beginning of the update
+            ###### OUR CODE
+            # Can thread, I don't think it would be hard, but for now because time just stutter
+            # the game here running the search for a certain number of second
+            ###### WORKING ON IT CODE
+            # result = self.game_state.generateSuccessors()
+            # for state in result:
+            #     state.print()
+            # time.sleep(5)
+            ###### REAL CODE
+            self.snake_opp.choose_move_toward_apple()
+            # Should make this update the gamestate!
+            self.dx1, self.dy1 = self.snake_opp.dx, self.snake_opp.dy
+            # For goodness sakes, just update the gamestate whenever you update the snake lol
+            self.game_state.me_dx = self.dx1
+            self.game_state.me_dy = self.dy1
+            self.game_state.opp_dx = self.dx2
+            self.game_state.opp_dy = self.dy2
+            ###### END OF OUR CODE
+
             # Calling the did_eat function
             self.did_eat()
 
@@ -169,9 +198,6 @@ class EdiblesTwoPlayer(Scene):
             # execute
             if self.plyrdraw or self.plyronewins or self.plyrtwowins:
                 return
-            
-            self.snake.choose_move_toward_apple()
-            self.dx1, self.dy1 = self.snake.dx, self.snake.dy
 
     def on_draw(self, screen):
         # Changes every pixel in the window to black. This is done to wipe the screen and set it up for drawing a new

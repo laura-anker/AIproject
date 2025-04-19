@@ -4,7 +4,7 @@ import random
 from PAdLib import rrect
 from pygame import gfxdraw
 from UtilSinglePlayer import GameState
-from SnakeUtil import Snake
+from SinglePlayerSnakeUtil import Snake
 
 # This class represents the standard One Player Mode of Snake. The player starts off with two tail segments and must
 # move around the grid, trying to eat more apples so that it can gain more segments. If it collides with the edge of the
@@ -86,13 +86,19 @@ class EdiblesOnePlayer(Scene):
 
     def on_update(self):
         # The fps (frames per second) is set to 15
-        self.director.fps = 15
+        self.director.fps = 60
 
         # Calling of the is_collide function
         self.is_collide()
 
         # The code in this conditional statement executes if a gameOver has not been achieved
         if not self.gameOver:
+            
+            ##### OUR CODE
+            # Added our code to the top like in twoplayer
+            self.snake.choose_move_toward_apple()
+            self.dx, self.dy = self.snake.dx, self.snake.dy
+            ##### END OF OUR CODE
 
             # Calling of the did_eat function
             self.did_eat()
@@ -110,9 +116,6 @@ class EdiblesOnePlayer(Scene):
             self.head.color = self.director.p1color
             for i in self.tail:
                 i.color = self.director.p1color
-
-            self.snake.choose_move_toward_apple()
-            self.dx, self.dy = self.snake.dx, self.snake.dy
 
     def on_draw(self, screen):
         # Changes every pixel in the window to black. This is done to wipe the screen and set it up for drawing a new
