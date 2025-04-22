@@ -246,6 +246,95 @@ class GameState:
                 potential_successors.append(potential_game_state)
 
         return potential_successors
+    
+    #same as generateSuccessors but an action is given for the ai snake to take
+    #action in the form "up", "down", "left", "right"
+    def generateSuccessorsAction(self, action):
+        # Check that successors exist
+        if self.isWin() or self.isLose() or self.isDraw(): raise Exception('Can\'t generate a successor of a terminal state.')
+        # *hard* copy current state
+        state = self.deep_copy()
+        # make snake class instances to hold both snakes
+        snake_me = Me_Snake(state)
+        snake_opp = Opp_Snake(state)
+        # List storing all possible successor states
+        potential_successors = []
+
+        # Have agents make one random move
+        potential_moves = ["up", "down", "left", "right"]
+        # Iterate through, generating a next state for each potential move for each agent
+        # (Any combination of either agent's move)
+        for move_opp in potential_moves:
+            # Have a fresh copy of our snkae and game state
+            potential_snake_me_state = snake_me.deep_copy()
+            potential_snake_opp_state = snake_opp.deep_copy()
+            potential_game_state = state.deep_copy()
+            # Update a hard copied snake, update a hard copied gamestate in that snake
+            potential_snake_me_state.make_move(action)
+            potential_snake_opp_state.make_move(move_opp)
+            potential_game_state.me_dx = potential_snake_me_state.dx
+            potential_game_state.me_dy = potential_snake_me_state.dy
+            potential_game_state.opp_dx = potential_snake_opp_state.dx
+            potential_game_state.opp_dy = potential_snake_opp_state.dy
+            # Okay, so above we edited the snake's directions, now we have
+            # to move the snakes forward one time step
+            potential_game_state.step()
+            # Check if apple was eaten, if it was replace it using the game logic found in
+            # ediblestwoplayer in our state variable above so next time it's
+            # copied, it's copied with the new apple, and add one to the length of
+            # the snake that ate it
+            self.did_eat()
+            # Check if the game ended. If so, return a state that displays that.
+            if self.isWin() or self.isDraw() or self.isLose():
+                self.gameOver = True
+            # add the generated potential state to potential_successors
+            potential_successors.append(potential_game_state)
+
+        return potential_successors
+    
+    #gets a single random successor game state from an action
+    def generateRandomSuccessor(self, action):
+        # Check that successors exist
+        if self.isWin() or self.isLose() or self.isDraw(): raise Exception('Can\'t generate a successor of a terminal state.')
+        # *hard* copy current state
+        state = self.deep_copy()
+        # make snake class instances to hold both snakes
+        snake_me = Me_Snake(state)
+        snake_opp = Opp_Snake(state)
+        # List storing all possible successor states
+        potential_successors = []
+
+        # Have agents make one random move
+        potential_moves = ["up", "down", "left", "right"]
+        move_opp = random.choice(potential_moves)
+        # Iterate through, generating a next state for each potential move for each agent
+        # (Any combination of either agent's move)
+        # Have a fresh copy of our snkae and game state
+        potential_snake_me_state = snake_me.deep_copy()
+        potential_snake_opp_state = snake_opp.deep_copy()
+        potential_game_state = state.deep_copy()
+        # Update a hard copied snake, update a hard copied gamestate in that snake
+        potential_snake_me_state.make_move(action)
+        potential_snake_opp_state.make_move(move_opp)
+        potential_game_state.me_dx = potential_snake_me_state.dx
+        potential_game_state.me_dy = potential_snake_me_state.dy
+        potential_game_state.opp_dx = potential_snake_opp_state.dx
+        potential_game_state.opp_dy = potential_snake_opp_state.dy
+        # Okay, so above we edited the snake's directions, now we have
+        # to move the snakes forward one time step
+        potential_game_state.step()
+        # Check if apple was eaten, if it was replace it using the game logic found in
+        # ediblestwoplayer in our state variable above so next time it's
+        # copied, it's copied with the new apple, and add one to the length of
+        # the snake that ate it
+        self.did_eat()
+        # Check if the game ended. If so, return a state that displays that.
+        if self.isWin() or self.isDraw() or self.isLose():
+            self.gameOver = True
+        # add the generated potential state to potential_successors
+        potential_successors.append(potential_game_state)
+
+        return potential_successors
 
     # Increments the snakes based on the direciton they are moving by one time step (or update)
     def step(self):
