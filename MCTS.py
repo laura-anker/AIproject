@@ -14,7 +14,7 @@ class Mcts:
     def __init__(self, gameState):
         self.root = Node(gameState)
 '''
-    def run():
+    def run(depth, currentGameState):
         #for some amount of time do a thing
         #return best action to take
 
