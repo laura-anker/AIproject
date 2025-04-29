@@ -70,6 +70,27 @@ class GameState:
         copied_game_state.director = self.director
         copied_game_state.gameOver = self.gameOver
         return copied_game_state
+    
+    def is_equal(self, other):
+        if (self.opp_head != other.opp_head):
+            return False
+        if (self.me_head != other.me_head):
+            return False
+        if (self.me_tail != other.me_tail):
+            return False
+        if (self.opp_tail != other.opp_tail):
+            return False
+        if (self.apple != other.apple):
+            return False
+        if (self.opp_dx != other.opp_dx):
+            return False
+        if (self.opp_dy != other.opp_dy):
+            return False
+        if (self.me_dx != other.me_dx):
+            return False
+        if (self.me_dy != other.me_dy):
+            return False
+        return True
 
     def get_walls(self, width, height, scale):
         walls = []
@@ -109,44 +130,52 @@ class GameState:
             # then is can go right
             if self.opp_dx >= 0:
                 #RIGHT
-                possibleActions.append(((10 *self.scale), 0))
+                #possibleActions.append(((10 *self.scale), 0))
+                possibleActions.append("right")
             # if my snake is not moving on the x-axis (opp_dx == 0) (covered above) 
             # or it is moving left (opp_dx<0) then is can go left
             if self.opp_dx < 0:
                 #LEFT
-                possibleActions.append(((-10 *self.scale), 0))
+                #possibleActions.append(((-10 *self.scale), 0))
+                possibleActions.append("left")
             # if my snake is not moving on the y-axis (opp_dy == 0) or it is moving down (opp_dy>0)
             # then is can go down
             if self.opp_dy >= 0:
                 #DOWN
-                possibleActions.append((0, (10 *self.scale)))
+                #possibleActions.append((0, (10 *self.scale)))
+                possibleActions.append("down")
             # if my snake is not moving on the y-axis (opp_dy == 0) (covered above) 
             # or it is moving up (opp_dy<0) then is can go up
             if self.opp_dy < 0:
                 #UP
-                possibleActions.append((0, (-10 *self.scale)))
+                #possibleActions.append((0, (-10 *self.scale)))
+                possibleActions.append("up")
         if agent == 2:
         #the snake can legally move any direction except backwards into itself
             # if my snake is not moving on the x-axis (opp_dx == 0) or it is moving right (opp_dx>0)
             # then is can go right
             if self.me_dx >= 0:
                 #RIGHT
-                possibleActions.append(((10 *self.scale), 0))
+                #possibleActions.append(((10 *self.scale), 0))
+                possibleActions.append("right")
             # if my snake is not moving on the x-axis (opp_dx == 0) (covered above) 
             # or it is moving left (opp_dx<0) then is can go left
             if self.me_dx < 0:
                 #LEFT
-                possibleActions.append(((-10 *self.scale), 0))
+                #possibleActions.append(((-10 *self.scale), 0))
+                possibleActions.append("left")
             # if my snake is not moving on the y-axis (opp_dy == 0) or it is moving down (opp_dy>0)
             # then is can go down
             if self.me_dy >= 0:
                 #DOWN
-                possibleActions.append((0, (10 *self.scale)))
+                #possibleActions.append((0, (10 *self.scale)))
+                possibleActions.append("down")
             # if my snake is not moving on the y-axis (opp_dy == 0) (covered above) 
             # or it is moving up (opp_dy<0) then is can go up
             if self.me_dy < 0:
                 #UP
-                possibleActions.append((0, (-10 *self.scale)))
+                #possibleActions.append((0, (-10 *self.scale)))
+                possibleActions.append("up")
         return possibleActions
     
     #checks if ai won
@@ -215,11 +244,12 @@ class GameState:
         potential_successors = []
 
         # Have agents make one random move
-        potential_moves = ["up", "down", "left", "right"]
+        ai_potential_moves = self.get_legal_actions(2)
+        player_potential_moves = self.get_legal_actions(1)
         # Iterate through, generating a next state for each potential move for each agent
         # (Any combination of either agent's move)
-        for move_me in potential_moves:
-            for move_opp in potential_moves:
+        for move_me in ai_potential_moves:
+            for move_opp in player_potential_moves:
                 # Have a fresh copy of our snkae and game state
                 potential_snake_me_state = snake_me.deep_copy()
                 potential_snake_opp_state = snake_opp.deep_copy()
@@ -261,7 +291,7 @@ class GameState:
         potential_successors = []
 
         # Have agents make one random move
-        potential_moves = ["up", "down", "left", "right"]
+        potential_moves = self.get_legal_actions(1)
         # Iterate through, generating a next state for each potential move for each agent
         # (Any combination of either agent's move)
         for move_opp in potential_moves:
@@ -305,8 +335,8 @@ class GameState:
         potential_successors = []
 
         # Have agents make one random move
-        potential_moves = ["up", "down", "left", "right"]
-        move_opp = random.choice(potential_moves)
+        player_potential_moves = self.get_legal_actions(1)
+        move_opp = random.choice(player_potential_moves)
         # Iterate through, generating a next state for each potential move for each agent
         # (Any combination of either agent's move)
         # Have a fresh copy of our snkae and game state

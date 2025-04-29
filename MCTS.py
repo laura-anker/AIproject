@@ -1,4 +1,5 @@
 from UtilTwoSnake import GameState
+import random
 
 class Node:
     def __init__(self, gameState):
@@ -32,7 +33,7 @@ class Mcts:
         #could use UCB1 formula
 
     #add one (or more?) child node(s) with score 0, returns child
-    #currently this generates all children and makes no selection
+    #currently this does the one child thing
     #SEVERAL THINGS TO CONSIDER: 
     # If we expand to multiple children: 
     # - must change run method to accomadate going through list
@@ -43,14 +44,31 @@ class Mcts:
     # - should check when expanding so you don't accidentally generate same successor twice
     # - tbh I like this idea better
     def expand(self, leaf):
+        states = []
         if leaf.children == None:
             leaf.children = []
-        for a in leaf.get_legal_actions():
-            for s in leaf.generateSuccessors(a):
-                newNode = Node(s)
-                newNode.parent = leaf
-                newNode.action = a
-                leaf.children.append(newNode)
+        else:
+            for c in leaf.children:
+                states.append(c.state)
+        #randomly choose an action
+        actions = leaf.state.get_legal_actions(2)
+        action = random.choice(actions)
+        #randomly generate successor state from action
+        state = leaf.state.generateRandomSuccessor(action)
+        #check that the successor has not already been generated
+        bl = True
+        while bl == True:
+            bl = False
+            for s in states:
+                if s.is_equal(state):
+                    state = leaf.state.generateRandomSuccessor(action)
+                    bl = True
+        #create, add, and return new node
+        newNode = Node(state)
+        newNode.parent = leaf
+        newNode.action = action
+        leaf.children.append(newNode)
+        return newNode
         #return one of the children? all of the children?
     
     #simulate new states until termination. do not store them in the tree, returns value representing win/lose/draw
