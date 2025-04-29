@@ -26,7 +26,7 @@ class Mcts:
             result = self.simulate(child)
             #we could skip back propogation if result is a draw? depends how we want to calculate score (traditionally it's just wins/total)
             self.backpropogate(result, child)
-        #return best action to take
+        #return best action to take by comparing scores of children of the root and picking action of child with greater score
 
     #move down the tree to select a node via some selection protocol, returns selected node
     def select(self):
@@ -74,15 +74,15 @@ class Mcts:
     #simulate new states until termination. do not store them in the tree, returns value representing win/lose/draw
     def simulate(self, child):
         #i think this is where the getRandomSuccessor comes in
-        newState = child.state.generateRandomSuccessor()
+        newState = child.state.generateRandomSuccessor(child.action)
         while newState.gameOver == False:
-            newState = child.state.generateRandomSuccessor()
+            newState = child.state.generateRandomSuccessor(child.action)
         #we should consider how we actually want to score this but this works for now
         if newState.isWin():
             return 1
         if newState.isLose():
             return -1
-        return 0
+        return -0.5
 
 
     #go back up the tree from the child, updating each score using result. 
