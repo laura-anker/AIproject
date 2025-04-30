@@ -325,7 +325,7 @@ class GameState:
     #gets a single random successor game state from an action
     def generateRandomSuccessor(self, action):
         # Check that successors exist
-        if self.isWin() or self.isLose() or self.isDraw(): raise Exception('Can\'t generate a successor of a terminal state.')
+        if self.isWin() or self.isLose() or self.isDraw(): raise Exception(f'Can\'t generate a successor of a terminal state. {self.gameOver}')
         # *hard* copy current state
         state = self.deep_copy()
         # make snake class instances to hold both snakes
@@ -361,10 +361,7 @@ class GameState:
         # Check if the game ended. If so, return a state that displays that.
         if self.isWin() or self.isDraw() or self.isLose():
             self.gameOver = True
-        # add the generated potential state to potential_successors
-        potential_successors.append(potential_game_state)
-        # Just choose a random successor from potential successors and return it
-        return random.choice(potential_successors)
+        return potential_game_state
 
     # Increments the snakes based on the direciton they are moving by one time step (or update)
     def step(self):

@@ -106,11 +106,23 @@ class Mcts:
         #return one of the children? all of the children?
     
     #simulate new states until termination. do not store them in the tree, returns value representing win/lose/draw
+    # We're doing a weird thing choosing a random action here and not just using the other
+        # method we have in utiltwosnake to generate random successors but who cares...
+        # ...it will work and we can stop thinking about how weird this code is
     def simulate(self, child):
+        # Should have used recursion here but it is what it is...
         #i think this is where the getRandomSuccessor comes in
-        newState = child.state.generateRandomSuccessor(child.action)
+        potential_actions = child.state.get_legal_actions(1)
+        random_action = random.choice(potential_actions)
+        newState = child.state.generateRandomSuccessor(random_action)
         while newState.gameOver == False:
-            newState = child.state.generateRandomSuccessor(child.action)
+            # What exactly is going on here!? lol I may need help but this
+                # is what I could think of
+            potential_actions = newState.get_legal_actions(1)
+            random_action = random.choice(potential_actions)
+            # Don't want to get child.state.generateRandomSuccessor every time
+                # right? Because we want to traverse down the tree
+            newState = newState.generateRandomSuccessor(random_action)
         #we should consider how we actually want to score this but this works for now
         if newState.isWin():
             return 1
