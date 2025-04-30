@@ -31,6 +31,11 @@ class Mcts:
             #we could skip back propogation if result is a draw? depends how we want to calculate score (traditionally it's just wins/total)
             self.backpropogate(result, child)
         #return best action to take by comparing scores of children of the root and picking action of child with greater score
+        children_rankings = {}
+        for child in self.root.children:
+            ranking = child.totalScore / child.numVisits
+            children_rankings[ranking] = child
+        return children_rankings[max(children_rankings)].action
 
     #move down the tree to select a node via some selection protocol, returns selected node
     def select(self):
@@ -63,8 +68,8 @@ class Mcts:
         # Now let's just get the child at the max value in the dictionary
             # and return that!
         # Did I find this shorthand online?! Yes! Yay python being easy to copy...
-        highest_child = max(children_rankings, key=children_rankings.get)
-        return highest_child
+        highest_child = max(children_rankings)
+        return children_rankings[highest_child]
 
     #add one (or more?) child node(s) with score 0, returns child
     #currently this does the one child thing
@@ -78,6 +83,12 @@ class Mcts:
     # - should check when expanding so you don't accidentally generate same successor twice
     # - tbh I like this idea better
     def expand(self, leaf):
+        # Basically, if we find a endstate here we should just return itself
+            # sometimes gameOver isn't set to true, just do it again here
+            # I don't want to find out where it's not being set right not...
+        if leaf.state.isWin() or leaf.state.isLose() or leaf.state.isDraw():
+            leaf.state.gameOver = True
+            return leaf
         states = []
         if leaf.children == None:
             leaf.children = []
@@ -110,6 +121,15 @@ class Mcts:
         # method we have in utiltwosnake to generate random successors but who cares...
         # ...it will work and we can stop thinking about how weird this code is
     def simulate(self, child):
+        # If child is end state, don't simulate
+            # we do actually want to accumulate wins/losses/draws on these gameover nodes though
+            # so keep this in here
+        if child.state.gameOver:
+            if child.state.isWin():
+                return 1
+            if child.state.isLose():
+                return -1
+            return -0.5
         # Should have used recursion here but it is what it is...
         #i think this is where the getRandomSuccessor comes in
         potential_actions = child.state.get_legal_actions(1)

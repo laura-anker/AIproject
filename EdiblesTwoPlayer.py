@@ -127,7 +127,7 @@ class EdiblesTwoPlayer(Scene):
 
     def on_update(self):
         # The fps (frames per second) is changed to 15
-        self.director.fps = 15
+        self.director.fps = 1.1
 
         # This conditional statement checks to see if none of the win states have been met, and if so, execute the
         # following code
@@ -143,12 +143,12 @@ class EdiblesTwoPlayer(Scene):
             # the game here running the search for a certain number of second
             ###### WORKING ON IT CODE
             mcts = Mcts(self.game_state)
-            mcts.run(0, 10)
-            print(mcts.select())
+            move = mcts.run(0, 1)
+            print(move)
             ###### REAL CODE
-            self.snake_opp.choose_move_toward_apple()
+            self.snake_opp.make_move("down")
             # Should make this update the gamestate!
-            self.dx1, self.dy1 = self.snake_opp.dx, self.snake_opp.dy
+            self.dx2, self.dy2 = self.snake_opp.dx, self.snake_opp.dy
             # For goodness sakes, just update the gamestate whenever you update the snake lol
             self.game_state.me_dx = self.dx1
             self.game_state.me_dy = self.dy1
