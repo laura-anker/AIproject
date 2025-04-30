@@ -363,8 +363,8 @@ class GameState:
             self.gameOver = True
         # add the generated potential state to potential_successors
         potential_successors.append(potential_game_state)
-
-        return potential_successors
+        # Just choose a random successor from potential successors and return it
+        return random.choice(potential_successors)
 
     # Increments the snakes based on the direciton they are moving by one time step (or update)
     def step(self):

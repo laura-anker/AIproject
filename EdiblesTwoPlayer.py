@@ -1,12 +1,13 @@
 from Scene import *
 from Entity import *
 import random
+import time
 from pygame import gfxdraw
 from PAdLib import rrect
 from UtilTwoSnake import GameState
 from OppSnakeUtil import Opp_Snake
 from MeSnakeUtil import Me_Snake
-import time
+from MCTS import Mcts
 
 class EdiblesTwoPlayer(Scene):
     def __init__(self, director):
@@ -141,10 +142,9 @@ class EdiblesTwoPlayer(Scene):
             # Can thread, I don't think it would be hard, but for now because time just stutter
             # the game here running the search for a certain number of second
             ###### WORKING ON IT CODE
-            # result = self.game_state.generateSuccessors()
-            # for state in result:
-            #     state.print()
-            # time.sleep(5)
+            mcts = Mcts(self.game_state)
+            mcts.run(0, 10)
+            print(mcts.select())
             ###### REAL CODE
             self.snake_opp.choose_move_toward_apple()
             # Should make this update the gamestate!

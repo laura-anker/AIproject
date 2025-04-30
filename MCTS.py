@@ -1,6 +1,7 @@
 from UtilTwoSnake import GameState
 import random
 import math
+import time
 
 class Node:
     def __init__(self, gameState):
@@ -18,10 +19,12 @@ class Mcts:
     def __init__(self, gameState):
         self.root = Node(gameState)
 
-    def run(self, depth, currentGameState):
+    def run(self, depth, loop_time):
         #for some amount of time do a thing
-        d = depth
-        while d > 0:
+        # d = depth
+        # while d > 0:
+        time_to_loop = time.time() + loop_time
+        while time.time() < time_to_loop:
             leaf = self.select()
             child = self.expand(leaf)
             result = self.simulate(child)
@@ -44,6 +47,10 @@ class Mcts:
             # so all this method has to do is analyze the root's children, not
             # the children's children the expand call should take care of expanding futher
             # down or not
+        # If there are no children, just return the root:
+        if self.root.children == None:
+            return self.root
+        # Otherwise, do all this stuffis
         children_rankings = {}
         for child in self.root.children:
             U = child.totalScore
@@ -110,7 +117,6 @@ class Mcts:
         if newState.isLose():
             return -1
         return -0.5
-
 
     #go back up the tree from the child, updating each score using result. 
     # I think just add 1 to all visits and add result to every score?
