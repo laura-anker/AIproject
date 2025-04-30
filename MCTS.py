@@ -1,5 +1,6 @@
 from UtilTwoSnake import GameState
 import random
+import math
 
 class Node:
     def __init__(self, gameState):
@@ -31,6 +32,32 @@ class Mcts:
     #move down the tree to select a node via some selection protocol, returns selected node
     def select(self):
         #could use UCB1 formula
+            # Sure, why not:
+            # Recall the formula: UCB1(n) = (U(n)/N(n)) + C * sqrt((log(N(Parent(n)))/(N(n)))
+        # I guess we can just compute this for each child then choose the one with
+            # the largest UCB1 ranking? Let's just try it like that!
+        # OOHHHHHH WAIT THIS IS EASIER THAN I THOUGHT YAYYY NO RECURSION NEEDED
+            # I thought I would have to expand children of children of children BUT
+            # that's the job of the expand function: is to see if we already
+            # expanded this node, if we have then expand a child further down the tree
+                # *do we need another select call then? or just choose a child randomly?*
+            # so all this method has to do is analyze the root's children, not
+            # the children's children the expand call should take care of expanding futher
+            # down or not
+        children_rankings = {}
+        for child in self.root.children:
+            U = child.totalScore
+            N = child.numVisits
+            C = 1.41 # 'Agreed' upon value for this scalar is sqrt(2) ~ 1.41, but
+                # edit this to get better results, like 1.5 or 1.3
+            Parent_N = child.parent.numVisits
+            ranking = (U/N) + C * math.sqrt((math.log(Parent_N))/(N))
+            children_rankings[ranking] = child
+        # Now let's just get the child at the max value in the dictionary
+            # and return that!
+        # Did I find this shorthand online?! Yes! Yay python being easy to copy...
+        highest_child = max(children_rankings, key=children_rankings.get)
+        return highest_child
 
     #add one (or more?) child node(s) with score 0, returns child
     #currently this does the one child thing
