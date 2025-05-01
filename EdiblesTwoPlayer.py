@@ -66,8 +66,6 @@ class EdiblesTwoPlayer(Scene):
             self.tail_2.append(Entity(self.head_2.x + 10 * i * director.scale, self.head_2.y * director.scale, 9 * director.scale, 9 * director.scale, self.director.p2color))
 
         self.game_state = GameState(self)
-        self.snake_me = Me_Snake(self.game_state)
-        self.snake_opp = Opp_Snake(self.game_state)
 
     def on_event(self, event):
         # This conditional statement that if either the W key is pressed down and if the first player's snake
@@ -139,6 +137,7 @@ class EdiblesTwoPlayer(Scene):
         if not self.plyronewins and not self.plyrtwowins and not self.plyrdraw:
 
             ##### START OF OUR CODE
+            self.game_state = GameState(self)
             global move
             # Check if we need to start a new MCTS calculation
             if not hasattr(self, 'mcts_running') or not self.mcts_running:
@@ -158,13 +157,28 @@ class EdiblesTwoPlayer(Scene):
             
             # If MCTS calculation finished, update the snake direction
             if hasattr(self, 'mcts_running') and not self.mcts_running and move is not None:
-                # Update the opponent snake based on the MCTS result
-                print(move)
-                self.snake_me.make_move(move)
-                self.dx2, self.dy2 = self.snake_me.dx, self.snake_me.dy
+                # Update the ai snake based on the MCTS result
+                if move == "up":
+                    self.dy2 = -10 * self.director.scale
+                    self.dx2 = 0
+                # This conditional statement that if either the Down key is pressed down and if the second player's snake
+                # is not moving on the y-axis then have it start moving down on the y axis cease movement on the x axis
+                if move == "down":
+                    self.dy2 = 10 * self.director.scale
+                    self.dx2 = 0
+                # This conditional statement that if either the A key is pressed down and if the second player's snake
+                # is not moving on the x-axis then have it start moving left on the x axis cease movement on the y axis
+                if move == "left":
+                    self.dx2 = -10 * self.director.scale
+                    self.dy2 = 0
+                # This conditional statement that if either the D key is pressed down and if the second player's snake
+                # is not moving on the x-axis then have it start moving right on the x axis cease movement on the y axis
+                if move == "right":
+                    self.dx2 = 10 * self.director.scale
+                    self.dy2 = 0
                 move = None  # Reset move to avoid using the same move multiple times
             # Always update gamestate with current directions
-            self.game_state.opp_head = self.head_1
+            '''self.game_state.opp_head = self.head_1
             self.game_state.me_head = self.head_2
             self.game_state.opp_tail = self.tail_1
             self.game_state.me_tail = self.tail_2
@@ -172,7 +186,7 @@ class EdiblesTwoPlayer(Scene):
             self.game_state.opp_dy = self.dy1
             self.game_state.me_dx = self.dx2
             self.game_state.me_dy = self.dy2
-            self.game_state.apple = self.apple
+            self.game_state.apple = self.apple'''
             ###### END OF OUR CODE
 
             # Calling the did_eat function

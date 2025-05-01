@@ -39,7 +39,18 @@ class Mcts:
             print(f"{child.numVisits=}")
             print(f"{child.totalScore=}")
         print(f"{children_rankings=}")
+        self.print_tree()
         return children_rankings[max(children_rankings)].action
+    
+    def print_tree(self):
+        self.print_tree_level(self.root, 0)
+
+    def print_tree_level(self, node, level):
+        prefix = "  " * level
+        print(prefix + "|-- " + str(node.state.gameOver))
+        if (node.children != None):
+            for child in node.children:
+                self.print_tree_level(child, level + 1)
 
     #move down the tree to select a node via some selection protocol, returns selected node
     def select(self):
@@ -137,7 +148,6 @@ class Mcts:
             if child.state.isLose():
                 return -1
             return -0.5
-        print("not 135ish?")
         # Should have used recursion here but it is what it is...
         #i think this is where the getRandomSuccessor comes in
         potential_actions = child.state.get_legal_actions(2)
