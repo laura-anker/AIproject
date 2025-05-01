@@ -164,10 +164,15 @@ class EdiblesTwoPlayer(Scene):
                 self.dx2, self.dy2 = self.snake_me.dx, self.snake_me.dy
                 move = None  # Reset move to avoid using the same move multiple times
             # Always update gamestate with current directions
-            self.game_state.me_dx = self.dx1
-            self.game_state.me_dy = self.dy1
-            self.game_state.opp_dx = self.dx2
-            self.game_state.opp_dy = self.dy2
+            self.game_state.opp_head = self.head_1
+            self.game_state.me_head = self.head_2
+            self.game_state.opp_tail = self.tail_1
+            self.game_state.me_tail = self.tail_2
+            self.game_state.opp_dx = self.dx1
+            self.game_state.opp_dy = self.dy1
+            self.game_state.me_dx = self.dx2
+            self.game_state.me_dy = self.dy2
+            self.game_state.apple = self.apple
             ###### END OF OUR CODE
 
             # Calling the did_eat function
