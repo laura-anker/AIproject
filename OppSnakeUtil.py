@@ -3,10 +3,10 @@ import random
 class Opp_Snake:
     def __init__(self, game_state):
         self.game_state = game_state
-        self.head = game_state.opp_head
-        self.tail = game_state.opp_tail
-        self.dx = game_state.opp_dx
-        self.dy = game_state.opp_dy
+        self.head = game_state.me_head
+        self.tail = game_state.me_tail
+        self.dx = game_state.me_dx
+        self.dy = game_state.me_dy
         self.scale = game_state.scale
         self.apple = game_state.apple
         self.screen = game_state.screen
@@ -16,7 +16,7 @@ class Opp_Snake:
         # in this copy of Me_Snake. Should be the same information, if not
         # copy each other piece of information individually afterwords, like
         # dont in utiltwosnake's gamestate class
-        return Opp_Snake(self.game_state)
+        return Me_Snake(self.game_state)
 
     def will_hit_wall(self, dx, dy):
         next_x = self.head.x + dx
@@ -24,7 +24,7 @@ class Opp_Snake:
         screen_width = self.screen.get_width()
         screen_height = self.screen.get_height()
         return next_x < 0 or next_x >= screen_width or next_y < 0 or next_y >= screen_height
-    
+
     def will_hit_self(self, dx, dy):
         next_x = self.head.x + dx
         next_y = self.head.y + dy
@@ -96,3 +96,4 @@ class Opp_Snake:
         if moves:
             move = random.choice(moves)
             self.dx, self.dy = move[1], move[2]
+

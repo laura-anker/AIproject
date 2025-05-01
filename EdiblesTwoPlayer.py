@@ -154,14 +154,14 @@ class EdiblesTwoPlayer(Scene):
                 self.mcts_running = True
                 mcts_thread = threading.Thread(target=run_mcts)
                 mcts_thread.daemon = True  # Make sure thread exits when program does
-                # mcts_thread.start()
+                mcts_thread.start()
             
             # If MCTS calculation finished, update the snake direction
             if hasattr(self, 'mcts_running') and not self.mcts_running and move is not None:
                 # Update the opponent snake based on the MCTS result
                 print(move)
-                self.snake_opp.make_move("down")
-                self.dx2, self.dy2 = self.snake_opp.dx, self.snake_opp.dy
+                self.snake_me.make_move(move)
+                self.dx2, self.dy2 = self.snake_me.dx, self.snake_me.dy
                 move = None  # Reset move to avoid using the same move multiple times
             # Always update gamestate with current directions
             self.game_state.me_dx = self.dx1

@@ -106,7 +106,7 @@ class Mcts:
         #randomly generate successor state from action
         state = leaf.state.generateRandomSuccessor(action)
         print(f"{state.gameOver=}")
-        print(f"{state.get_legal_actions(2)=}")
+        print(f"{action}")
         #check that the successor has not already been generated
         bl = True
         while bl == True:
@@ -140,22 +140,25 @@ class Mcts:
         print("not 135ish?")
         # Should have used recursion here but it is what it is...
         #i think this is where the getRandomSuccessor comes in
-        potential_actions = child.state.get_legal_actions(1)
+        potential_actions = child.state.get_legal_actions(2)
         random_action = random.choice(potential_actions)
         newState = child.state.generateRandomSuccessor(random_action)
         while newState.gameOver == False:
             # What exactly is going on here!? lol I may need help but this
                 # is what I could think of
-            potential_actions = newState.get_legal_actions(1)
+            potential_actions = newState.get_legal_actions(2)
             random_action = random.choice(potential_actions)
             # Don't want to get child.state.generateRandomSuccessor every time
                 # right? Because we want to traverse down the tree
             newState = newState.generateRandomSuccessor(random_action)
         #we should consider how we actually want to score this but this works for now
         if newState.isWin():
+            print("win")
             return 1
         if newState.isLose():
+            print("lose")
             return -1
+        print("draw")
         return -0.5
 
     #go back up the tree from the child, updating each score using result. 
