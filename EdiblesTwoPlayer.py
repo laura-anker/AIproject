@@ -2,12 +2,15 @@ from Scene import *
 from Entity import *
 import random
 import time
+import threading
 from pygame import gfxdraw
 from PAdLib import rrect
 from UtilTwoSnake import GameState
 from OppSnakeUtil import Opp_Snake
 from MeSnakeUtil import Me_Snake
 from MCTS import Mcts
+
+move = None
 
 class EdiblesTwoPlayer(Scene):
     def __init__(self, director):
@@ -127,29 +130,39 @@ class EdiblesTwoPlayer(Scene):
 
     def on_update(self):
         # The fps (frames per second) is changed to 15
-        self.director.fps = 1.1
+        self.director.fps = 0.18
 
         # This conditional statement checks to see if none of the win states have been met, and if so, execute the
         # following code
         if not self.plyronewins and not self.plyrtwowins and not self.plyrdraw:
 
-            ###### START OF OUR CODE
-            # OHHHHHH I THINK OUR CODE HAS TO adjust the snake direction BEFORE
-            # stepping forward, I think the snake was dying before becuase
-            # it was moving one step behind the update! So I moved all this
-            # code up above everything else at the beginning of the update
-            ###### OUR CODE
-            # Can thread, I don't think it would be hard, but for now because time just stutter
-            # the game here running the search for a certain number of second
-            ###### WORKING ON IT CODE
-            mcts = Mcts(self.game_state)
-            move = mcts.run(0, 1)
-            print(move)
-            ###### REAL CODE
-            self.snake_opp.make_move("down")
-            # Should make this update the gamestate!
-            self.dx2, self.dy2 = self.snake_opp.dx, self.snake_opp.dy
-            # For goodness sakes, just update the gamestate whenever you update the snake lol
+            ##### START OF OUR CODE
+            global move
+            # Check if we need to start a new MCTS calculation
+            if not hasattr(self, 'mcts_running') or not self.mcts_running:
+                timestep = 5
+                mcts = Mcts(self.game_state)
+                def run_mcts():
+                    global move
+                    print("in")
+                    move = mcts.run(0, timestep)
+                    print(move)
+                    self.mcts_running = False
+                
+                # Start the thread and mark as running
+                self.mcts_running = True
+                mcts_thread = threading.Thread(target=run_mcts)
+                mcts_thread.daemon = True  # Make sure thread exits when program does
+                mcts_thread.start()
+            
+            # If MCTS calculation finished, update the snake direction
+            if hasattr(self, 'mcts_running') and not self.mcts_running and move is not None:
+                # Update the opponent snake based on the MCTS result
+                print(move)
+                self.snake_opp.make_move("down")
+                self.dx2, self.dy2 = self.snake_opp.dx, self.snake_opp.dy
+                move = None  # Reset move to avoid using the same move multiple times
+            # Always update gamestate with current directions
             self.game_state.me_dx = self.dx1
             self.game_state.me_dy = self.dy1
             self.game_state.opp_dx = self.dx2

@@ -35,6 +35,7 @@ class Mcts:
         for child in self.root.children:
             ranking = child.totalScore / child.numVisits
             children_rankings[ranking] = child
+        print(children_rankings)
         return children_rankings[max(children_rankings)].action
 
     #move down the tree to select a node via some selection protocol, returns selected node
