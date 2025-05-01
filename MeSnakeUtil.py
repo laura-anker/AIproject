@@ -16,7 +16,7 @@ class Me_Snake:
         # in this copy of Me_Snake. Should be the same information, if not
         # copy each other piece of information individually afterwords, like
         # dont in utiltwosnake's gamestate class
-        return Opp_Snake(self.game_state)
+        return Me_Snake(self.game_state)
 
     def will_hit_wall(self, dx, dy):
         next_x = self.head.x + dx
