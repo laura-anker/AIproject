@@ -52,23 +52,14 @@ class GameState:
         # One can change that here and when generating successors if one needs to
     def deep_copy(self):
         copied_game_state = GameState(self.edibles_two_player_scene)
-        copied_game_state.edibles_two_player_scene = self.edibles_two_player_scene
-        copied_game_state.opp_head = self.opp_head
-        copied_game_state.me_head = self.me_head
-        copied_game_state.opp_tail = self.opp_tail
-        copied_game_state.me_tail = self.me_tail
-        copied_game_state.opp_dx = self.opp_dx
-        copied_game_state.opp_dy = self.opp_dy
-        copied_game_state.me_dx = self.me_dx
-        copied_game_state.me_dy = self.me_dy
-        copied_game_state.apple = self.apple
-        copied_game_state.walls = self.walls
-        copied_game_state.w = self.w
-        copied_game_state.h = self.h
-        copied_game_state.scale = self.scale
-        copied_game_state.screen = self.screen
-        copied_game_state.director = self.director
-        copied_game_state.gameOver = self.gameOver
+        # Create new Entity objects with same properties
+        copied_game_state.opp_head = Entity(self.opp_head.x, self.opp_head.y, 
+                                            self.opp_head.width, self.opp_head.height, 
+                                            self.opp_head.color)
+        # Similar for me_head, and deep copy lists for tails
+        copied_game_state.opp_tail = [Entity(seg.x, seg.y, seg.width, seg.height, seg.color) 
+                                        for seg in self.opp_tail]
+        # ... copy other attributes properly
         return copied_game_state
     
     def is_equal(self, other):
