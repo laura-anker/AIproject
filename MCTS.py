@@ -18,6 +18,8 @@ class Node:
 class Mcts:
     def __init__(self, gameState):
         self.root = Node(gameState)
+        self.all_nodes = []
+        self.all_nodes.append(self.root)
 
     def run(self, depth, loop_time):
         #for some amount of time do a thing
@@ -70,14 +72,15 @@ class Mcts:
         # If there are no children, just return the root:
         if self.root.children == None:
             return self.root
-        # Otherwise, do all this stuffis
         children_rankings = {}
-        for child in self.root.children:
+        for child in self.all_nodes:
             U = child.totalScore
             N = child.numVisits
             C = 1.41 # 'Agreed' upon value for this scalar is sqrt(2) ~ 1.41, but
                 # edit this to get better results, like 1.5 or 1.3
-            Parent_N = child.parent.numVisits
+            Parent_N = 1
+            if (child.parent != None):
+                Parent_N = child.parent.numVisits
             ranking = (U/N) + C * math.sqrt((math.log(Parent_N))/(N))
             children_rankings[ranking] = child
         # Now let's just get the child at the max value in the dictionary
@@ -112,12 +115,12 @@ class Mcts:
                 states.append(c.state)
         #randomly choose an action
         actions = leaf.state.get_legal_actions(2)
-        print(f"{actions=}")
+        #print(f"{actions=}")
         action = random.choice(actions)
         #randomly generate successor state from action
         state = leaf.state.generateRandomSuccessor(action)
-        print(f"{state.gameOver=}")
-        print(f"{action}")
+        #print(f"{state.gameOver=}")
+        #print(f"{action}")
         #check that the successor has not already been generated
         bl = True
         while bl == True:
@@ -131,6 +134,7 @@ class Mcts:
         newNode.parent = leaf
         newNode.action = action
         leaf.children.append(newNode)
+        self.all_nodes.append(newNode)
         return newNode
         #return one of the children? all of the children?
     
@@ -163,12 +167,12 @@ class Mcts:
             newState = newState.generateRandomSuccessor(random_action)
         #we should consider how we actually want to score this but this works for now
         if newState.isWin():
-            print("win")
+            #print("win")
             return 1
         if newState.isLose():
-            print("lose")
+            #print("lose")
             return -1
-        print("draw")
+        #print("draw")
         return -0.5
 
     #go back up the tree from the child, updating each score using result. 

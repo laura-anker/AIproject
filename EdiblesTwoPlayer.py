@@ -144,7 +144,7 @@ class EdiblesTwoPlayer(Scene):
                 mcts = Mcts(self.game_state)
                 def run_mcts():
                     global move
-                    print("in")
+                    #print("in")
                     move = mcts.run(0, timestep)
                     print(move)
                     self.mcts_running = False
