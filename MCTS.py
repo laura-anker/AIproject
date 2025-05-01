@@ -82,12 +82,17 @@ class Mcts:
             if (child.parent != None):
                 Parent_N = child.parent.numVisits
             ranking = (U/N) + C * math.sqrt((math.log(Parent_N))/(N))
-            children_rankings[ranking] = child
+            if (not ranking in children_rankings.keys()):
+                l = []
+                l.append(child)
+                children_rankings[ranking] = l
+            else:
+                children_rankings[ranking].append(child)
         # Now let's just get the child at the max value in the dictionary
             # and return that!
         # Did I find this shorthand online?! Yes! Yay python being easy to copy...
         highest_child = max(children_rankings)
-        return children_rankings[highest_child]
+        return random.choice(children_rankings[highest_child])
 
     #add one (or more?) child node(s) with score 0, returns child
     #currently this does the one child thing
@@ -122,10 +127,15 @@ class Mcts:
         #print(f"{state.gameOver=}")
         #print(f"{action}")
         #check that the successor has not already been generated
+        max_attempts = 100
         bl = True
         while bl == True:
             bl = False
             for s in states:
+                attempts += 1
+                if attempts >= max_attempts:
+                    # All children already expanded
+                    return leaf  # Don't expand, just return the current node
                 if s.is_equal(state):
                     state = leaf.state.generateRandomSuccessor(action)
                     bl = True
