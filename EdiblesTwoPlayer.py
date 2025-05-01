@@ -129,8 +129,10 @@ class EdiblesTwoPlayer(Scene):
             self.director.scenes[2] = EdiblesTwoPlayer(self.director)
 
     def on_update(self):
+        timestep = 0.3 # Our code line
+
         # The fps (frames per second) is changed to 15
-        self.director.fps = 0.18
+        self.director.fps = 1/timestep
 
         # This conditional statement checks to see if none of the win states have been met, and if so, execute the
         # following code
@@ -140,7 +142,6 @@ class EdiblesTwoPlayer(Scene):
             global move
             # Check if we need to start a new MCTS calculation
             if not hasattr(self, 'mcts_running') or not self.mcts_running:
-                timestep = 5
                 mcts = Mcts(self.game_state)
                 def run_mcts():
                     global move
@@ -153,7 +154,7 @@ class EdiblesTwoPlayer(Scene):
                 self.mcts_running = True
                 mcts_thread = threading.Thread(target=run_mcts)
                 mcts_thread.daemon = True  # Make sure thread exits when program does
-                mcts_thread.start()
+                # mcts_thread.start()
             
             # If MCTS calculation finished, update the snake direction
             if hasattr(self, 'mcts_running') and not self.mcts_running and move is not None:

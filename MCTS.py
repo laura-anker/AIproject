@@ -35,7 +35,10 @@ class Mcts:
         for child in self.root.children:
             ranking = child.totalScore / child.numVisits
             children_rankings[ranking] = child
-        print(children_rankings)
+            print(f"{child.children=}")
+            print(f"{child.numVisits=}")
+            print(f"{child.totalScore=}")
+        print(f"{children_rankings=}")
         return children_rankings[max(children_rankings)].action
 
     #move down the tree to select a node via some selection protocol, returns selected node
@@ -98,9 +101,12 @@ class Mcts:
                 states.append(c.state)
         #randomly choose an action
         actions = leaf.state.get_legal_actions(2)
+        print(f"{actions=}")
         action = random.choice(actions)
         #randomly generate successor state from action
         state = leaf.state.generateRandomSuccessor(action)
+        print(f"{state.gameOver=}")
+        print(f"{state.get_legal_actions(2)=}")
         #check that the successor has not already been generated
         bl = True
         while bl == True:
@@ -131,6 +137,7 @@ class Mcts:
             if child.state.isLose():
                 return -1
             return -0.5
+        print("not 135ish?")
         # Should have used recursion here but it is what it is...
         #i think this is where the getRandomSuccessor comes in
         potential_actions = child.state.get_legal_actions(1)
