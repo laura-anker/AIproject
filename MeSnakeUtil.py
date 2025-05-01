@@ -16,7 +16,17 @@ class Me_Snake:
         # in this copy of Me_Snake. Should be the same information, if not
         # copy each other piece of information individually afterwords, like
         # dont in utiltwosnake's gamestate class
-        return Me_Snake(self.game_state)
+        # First, ensure we have a deep copied game state
+        copied_game_state = self.game_state.deep_copy()
+        
+        # Create a new snake with the copied game state
+        copied_snake = Me_Snake(copied_game_state)
+        
+        # Explicitly copy over current state values
+        copied_snake.dx = self.dx
+        copied_snake.dy = self.dy
+        
+        return copied_snake
 
     def will_hit_wall(self, dx, dy):
         next_x = self.head.x + dx
