@@ -36,13 +36,18 @@ class Mcts:
         children_rankings = {}
         for child in self.root.children:
             ranking = child.totalScore / child.numVisits
-            children_rankings[ranking] = child
-            print(f"{child.children=}")
-            print(f"{child.numVisits=}")
-            print(f"{child.totalScore=}")
-        print(f"{children_rankings=}")
-        self.print_tree()
-        return children_rankings[max(children_rankings)].action
+            if children_rankings.get(child) != None:
+                children_rankings[child] = children_rankings[child] + ranking
+            else:
+                children_rankings[child] = ranking
+
+        #     print(f"{child.children=}")
+        #     print(f"{child.numVisits=}")
+        #     print(f"{child.totalScore=}")
+        # print(f"{children_rankings=}")
+        # self.print_tree()
+        max_child = max(children_rankings, key=children_rankings.get)
+        return max_child.action
     
     def print_tree(self):
         self.print_tree_level(self.root, 0)
@@ -54,8 +59,11 @@ class Mcts:
             for child in node.children:
                 self.print_tree_level(child, level + 1)
 
-    #move down the tree to select a node via some selection protocol, returns selected node
     def select(self):
+        return random.choice(self.all_nodes)
+    
+    #move down the tree to select a node via some selection protocol, returns selected node
+    def select_ucb1(self):
         #could use UCB1 formula
             # Sure, why not:
             # Recall the formula: UCB1(n) = (U(n)/N(n)) + C * sqrt((log(N(Parent(n)))/(N(n)))
