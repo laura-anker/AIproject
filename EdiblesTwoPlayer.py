@@ -94,23 +94,23 @@ class EdiblesTwoPlayer(Scene):
         # This conditional statement that if either the Up key is pressed down and if the second player's snake
         # is not moving on the y-axis then have it start moving up on the y axis cease movement on the x axis
         if event.type == pygame.KEYDOWN and event.key == pygame.K_UP and self.dy2 == 0:
-            self.dy2 = -10 * self.director.scale
-            self.dx2 = 0
+            self.dy1 = -10 * self.director.scale
+            self.dx1 = 0
         # This conditional statement that if either the Down key is pressed down and if the second player's snake
         # is not moving on the y-axis then have it start moving down on the y axis cease movement on the x axis
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN and self.dy2 == 0:
-            self.dy2 = 10 * self.director.scale
-            self.dx2 = 0
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN and self.dy1 == 0:
+            self.dy1 = 10 * self.director.scale
+            self.dx1 = 0
         # This conditional statement that if either the A key is pressed down and if the second player's snake
         # is not moving on the x-axis then have it start moving left on the x axis cease movement on the y axis
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT and self.dx2 == 0:
-            self.dx2 = -10 * self.director.scale
-            self.dy2 = 0
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT and self.dx1 == 0:
+            self.dx1 = -10 * self.director.scale
+            self.dy1 = 0
         # This conditional statement that if either the D key is pressed down and if the second player's snake
         # is not moving on the x-axis then have it start moving right on the x axis cease movement on the y axis
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT and self.dx2 == 0:
-            self.dx2 = 10 * self.director.scale
-            self.dy2 = 0
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT and self.dx1 == 0:
+            self.dx1 = 10 * self.director.scale
+            self.dy1 = 0
         # If the R button is pressed down then the scene is changed to a new instance of the Two Player Mode
         if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
             # Causes the currently playing song to stop playing
@@ -129,7 +129,7 @@ class EdiblesTwoPlayer(Scene):
             self.director.scenes[2] = EdiblesTwoPlayer(self.director)
 
     def on_update(self):
-        timestep = 0.3 # Our code line
+        timestep = 0.2 # Our code line
 
         # The fps (frames per second) is changed to 15
         self.director.fps = 1/timestep
