@@ -129,7 +129,7 @@ class EdiblesTwoPlayer(Scene):
             self.director.scenes[2] = EdiblesTwoPlayer(self.director)
 
     def on_update(self):
-        timestep = 0.2 # Our code line
+        timestep = 0.5 # Our code line
 
         # The fps (frames per second) is changed to 15
         self.director.fps = 1/timestep
@@ -147,8 +147,14 @@ class EdiblesTwoPlayer(Scene):
                 def run_mcts():
                     global move
                     #print("in")
-                    move = mcts.run(10, timestep)
-                    print(move)
+                    move = mcts.run(timestep)
+                    # print(f"{mcts.root.state.get_legal_actions(2)=}")
+                    # print(f"{len(mcts.root.children)=}")
+                    # for child in mcts.root.children:
+                    #     print(f"{child.action=}")
+                    #     print(f"{child.totalScore=}")
+                    #     print(f"{child.numVisits=}")
+                    # print(f"{move=}")
                     self.mcts_running = False
                 
                 # Start the thread and mark as running

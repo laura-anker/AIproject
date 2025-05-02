@@ -21,7 +21,7 @@ class Mcts:
         self.all_nodes = []
         self.all_nodes.append(self.root)
 
-    def run(self, depth, loop_time):
+    def run(self, loop_time):
         #for some amount of time do a thing
         # d = depth
         # while d > 0:
@@ -34,15 +34,23 @@ class Mcts:
             self.backpropogate(result, child)
         #return best action to take by comparing scores of children of the root and picking action of child with greater score
         children_rankings = {}
+        # Average scores of actions of children because why the heck not
         for child in self.root.children:
             ranking = child.totalScore / child.numVisits
-            children_rankings[ranking] = child
-            print(f"{child.children=}")
-            print(f"{child.numVisits=}")
-            print(f"{child.totalScore=}")
-        print(f"{children_rankings=}")
-        self.print_tree()
-        return children_rankings[max(children_rankings)].action
+            if children_rankings.get(child) != None:
+                children_rankings[child] = children_rankings[child] + ranking
+            else:
+                children_rankings[child] = ranking
+        # print(children_rankings)
+        #     print(f"{child.children=}")
+        #     print(f"{child.numVisits=}")
+        #     print(f"{child.totalScore=}")
+        # print(f"{children_rankings=}")
+        # self.print_tree()
+        # this line was found on stack overflow but idek what it's doing
+            # 1 min later: now I do...
+        max_child = max(children_rankings, key=children_rankings.get)
+        return max_child.action
     
     def print_tree(self):
         self.print_tree_level(self.root, 0)
@@ -54,8 +62,11 @@ class Mcts:
             for child in node.children:
                 self.print_tree_level(child, level + 1)
 
-    #move down the tree to select a node via some selection protocol, returns selected node
     def select(self):
+        return random.choice(self.all_nodes)
+    
+    #move down the tree to select a node via some selection protocol, returns selected node
+    def select_ucb1(self):
         #could use UCB1 formula
             # Sure, why not:
             # Recall the formula: UCB1(n) = (U(n)/N(n)) + C * sqrt((log(N(Parent(n)))/(N(n)))
