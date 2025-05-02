@@ -41,14 +41,11 @@ class Mcts:
                 children_rankings[child] = children_rankings[child] + ranking
             else:
                 children_rankings[child] = ranking
-        # print(children_rankings)
         #     print(f"{child.children=}")
         #     print(f"{child.numVisits=}")
         #     print(f"{child.totalScore=}")
         # print(f"{children_rankings=}")
         # self.print_tree()
-        # this line was found on stack overflow but idek what it's doing
-            # 1 min later: now I do...
         max_child = max(children_rankings, key=children_rankings.get)
         return max_child.action
     
