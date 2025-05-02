@@ -21,7 +21,7 @@ class Mcts:
         self.all_nodes = []
         self.all_nodes.append(self.root)
 
-    def run(self, depth, loop_time):
+    def run(self, loop_time):
         #for some amount of time do a thing
         # d = depth
         # while d > 0:
