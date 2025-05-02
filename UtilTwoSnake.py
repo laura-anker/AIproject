@@ -3,28 +3,48 @@ from Entity import Entity
 from OppSnakeUtil import Opp_Snake
 from MeSnakeUtil import Me_Snake
 import random
+import copy
 
 class GameState:
-    def __init__(self, edibles_two_player_scene):
-        # Store this for deep copying
-        self.edibles_two_player_scene = edibles_two_player_scene
-        self.opp_head = edibles_two_player_scene.head_1
-        self.me_head = edibles_two_player_scene.head_2
-        self.opp_tail = edibles_two_player_scene.tail_1
-        self.me_tail = edibles_two_player_scene.tail_1
-        #positive means going right, negative left
-        self.opp_dx = edibles_two_player_scene.dx1
-        #positive means going down, negative up
-        self.opp_dy = edibles_two_player_scene.dy1
-        self.me_dx = edibles_two_player_scene.dx2
-        self.me_dy = edibles_two_player_scene.dy2
-        self.apple = edibles_two_player_scene.apple
-        self.walls = self.get_walls(edibles_two_player_scene.w, edibles_two_player_scene.h, edibles_two_player_scene.director.scale)
-        self.w = edibles_two_player_scene.w
-        self.h = edibles_two_player_scene.h
-        self.scale = edibles_two_player_scene.director.scale
-        self.screen = edibles_two_player_scene.director.screen
-        self.director = edibles_two_player_scene.director
+    def __init__(self, edibles_two_player_scene=None):
+        if (edibles_two_player_scene != None):
+            self.opp_head = edibles_two_player_scene.head_1
+            self.me_head = edibles_two_player_scene.head_2
+            self.opp_tail = edibles_two_player_scene.tail_1
+            self.me_tail = edibles_two_player_scene.tail_1
+            #positive means going right, negative left
+            self.opp_dx = edibles_two_player_scene.dx1
+            #positive means going down, negative up
+            self.opp_dy = edibles_two_player_scene.dy1
+            self.me_dx = edibles_two_player_scene.dx2
+            self.me_dy = edibles_two_player_scene.dy2
+            self.apple = edibles_two_player_scene.apple
+            self.walls = self.get_walls(edibles_two_player_scene.w, edibles_two_player_scene.h, edibles_two_player_scene.director.scale)
+            self.w = edibles_two_player_scene.w
+            self.h = edibles_two_player_scene.h
+            self.scale = edibles_two_player_scene.director.scale
+            self.screen = edibles_two_player_scene.director.screen
+            self.p1color = edibles_two_player_scene.director.p1color
+            self.p2color = edibles_two_player_scene.director.p2color
+        else:
+            self.opp_head = None
+            self.me_head = None
+            self.opp_tail = None
+            self.me_tail = None
+            #positive means going right, negative left
+            self.opp_dx = 0
+            #positive means going down, negative up
+            self.opp_dy = 0
+            self.me_dx = 0
+            self.me_dy = 0
+            self.apple = None
+            self.walls = None
+            self.w = 0
+            self.h = 0
+            self.scale = 0
+            self.screen = 0
+            self.p1color = None
+            self.p2color = None
         self.gameOver = False
 
     # Just a nice function to have
@@ -51,15 +71,30 @@ class GameState:
         # so I didn't implement the updating of that when copying at all.
         # One can change that here and when generating successors if one needs to
     def deep_copy(self):
-        copied_game_state = GameState(self.edibles_two_player_scene)
-        # Create new Entity objects with same properties
+        copied_game_state = GameState()
         copied_game_state.opp_head = Entity(self.opp_head.x, self.opp_head.y, 
                                             self.opp_head.width, self.opp_head.height, 
                                             self.opp_head.color)
-        # Similar for me_head, and deep copy lists for tails
         copied_game_state.opp_tail = [Entity(seg.x, seg.y, seg.width, seg.height, seg.color) 
                                         for seg in self.opp_tail]
-        # ... copy other attributes properly
+        copied_game_state.me_head = Entity(self.me_head.x, self.me_head.y, 
+                                            self.me_head.width, self.me_head.height, 
+                                            self.me_head.color)
+        copied_game_state.me_tail = [Entity(seg.x, seg.y, seg.width, seg.height, seg.color) 
+                                        for seg in self.me_tail]
+        copied_game_state.opp_dx = self.opp_dx
+        copied_game_state.opp_dy = self.opp_dy
+        copied_game_state.me_dx = self.me_dx
+        copied_game_state.me_dy = self.me_dy
+        copied_game_state.apple = copy.deepcopy(self.apple)
+        copied_game_state.w = self.w
+        copied_game_state.h = self.h
+        copied_game_state.scale = self.scale
+        copied_game_state.screen = self.screen
+        copied_game_state.walls = [Entity(w.x, w.y, w.width, w.height, w.color) for w in self.walls]
+        copied_game_state.p1color = self.p1color
+        copied_game_state.p2color = self.p2color
+        copied_game_state.gameOver = self.gameOver
         return copied_game_state
     
     def is_equal(self, other):
@@ -199,17 +234,6 @@ class GameState:
                 return True
         return False
     
-    # returns an action
-    def monte_carlo_tree_search(state):
-        # tree ‹ NODE(state)
-        # while Is-TIME-REMAINING) do
-            # leaf ‹ SELECT(tree)
-            # child ‹ ExPaND(leaf)
-            # result < SIMULATE(child)
-            # BACK-PROPAGATE(result, child)
-        # return the move in ACTIONS(state) whose node has highest number of playouts
-        return
-    
     #checks if it's a draw
     def isDraw(self):
         if self.opp_head.x == self.me_head.x and self.opp_head.y == self.me_head.y:
@@ -259,10 +283,10 @@ class GameState:
                 # ediblestwoplayer in our state variable above so next time it's
                 # copied, it's copied with the new apple, and add one to the length of
                 # the snake that ate it
-                self.did_eat()
+                potential_game_state.did_eat()
                 # Check if the game ended. If so, return a state that displays that.
-                if self.isWin() or self.isDraw() or self.isLose():
-                    self.gameOver = True
+                if potential_game_state.isWin() or potential_game_state.isDraw() or potential_game_state.isLose():
+                    potential_game_state.gameOver = True
                 # add the generated potential state to potential_successors
                 potential_successors.append(potential_game_state)
 
@@ -304,10 +328,10 @@ class GameState:
             # ediblestwoplayer in our state variable above so next time it's
             # copied, it's copied with the new apple, and add one to the length of
             # the snake that ate it
-            self.did_eat()
+            potential_game_state.did_eat()
             # Check if the game ended. If so, return a state that displays that.
-            if self.isWin() or self.isDraw() or self.isLose():
-                self.gameOver = True
+            if potential_game_state.isWin() or potential_game_state.isDraw() or potential_game_state.isLose():
+                potential_game_state.gameOver = True
             # add the generated potential state to potential_successors
             potential_successors.append(potential_game_state)
 
@@ -398,25 +422,25 @@ class GameState:
             # The integer value of what will be the previous Y value
             prevY = self.apple.y
             # The integer value of what will be the new current X value. It is randomly generated
-            currX = self.myround(random.randint(0, int(self.w / 10 - 10 * self.director.scale)), 10 * self.director.scale) * 10 + 1 * self.director.scale
+            currX = self.myround(random.randint(0, int(self.w / 10 - 10 * self.scale)), 10 * self.scale) * 10 + 1 * self.scale
             # This loop checks if the previous X value and the newly generated X value are the same, if so it will
             # generate a new one until they no longer match. This stops the apple from spawning in place
             while prevX == currX:
-                currX = self.myround(random.randint(0, int(self.w / 10 - 10 * self.director.scale)), 10 * self.director.scale) * 10 + 1 * self.director.scale
+                currX = self.myround(random.randint(0, int(self.w / 10 - 10 * self.scale)), 10 * self.scale) * 10 + 1 * self.scale
             # The integer value of what will be the new current Y value. It is randomly generated
-            currY = self.myround(random.randint(0, int(self.h / 10 - 10 * self.director.scale)), 10 * self.director.scale) * 10 + 1 * self.director.scale
+            currY = self.myround(random.randint(0, int(self.h / 10 - 10 * self.scale)), 10 * self.scale) * 10 + 1 * self.scale
             # This loop checks if the previous Y value and the newly generated Y value are the same, if so it will
             # generate a new one until they no longer match. This stops the apple from spawning in place
             while prevY == currY:
-                currY = self.myround(random.randint(0, int(self.h / 10 - 10 * self.director.scale)), 10 * self.director.scale) * 10 + 1 * self.director.scale
+                currY = self.myround(random.randint(0, int(self.h / 10 - 10 * self.scale)), 10 * self.scale) * 10 + 1 * self.scale
             # The next 11 lines essentially do what the previous lines have except it checks each segements of the tail
             # so that the apple doesn't spawn in one of their spots
             for i in self.opp_tail:
                 if currX == i.x and currY == i.y:
                     spaceEmpty = False
                     while not spaceEmpty and prevX != currX and prevY != currY:
-                        currX = self.myround(random.randint(0, int(self.w / 10 - 10 * self.director.scale)), 10 * self.director.scale) * 10 + 1 * self.director.scale
-                        currY = self.myround(random.randint(0, int(self.h / 10 - 10 * self.director.scale)), 10 * self.director.scale) * 10 + 1 * self.director.scale
+                        currX = self.myround(random.randint(0, int(self.w / 10 - 10 * self.scale)), 10 * self.scale) * 10 + 1 * self.scale
+                        currY = self.myround(random.randint(0, int(self.h / 10 - 10 * self.scale)), 10 * self.scale) * 10 + 1 * self.scale
                         for j in self.opp_tail:
                             if currX == j.x and currY == j.y:
                                 spaceEmpty = False
@@ -428,7 +452,7 @@ class GameState:
             self.apple.y = currY
 
             # A new segment is added to the end of the first player's snake
-            self.opp_tail.append(Entity(self.opp_tail[len(self.tail_1) - 1].x * self.director.scale, self.opp_tail[len(self.opp_tail) - 1 * self.director.scale].y, 9 * self.director.scale, 9 * self.director.scale, self.director.p1color))
+            self.opp_tail.append(Entity(self.opp_tail[len(self.tail_1) - 1].x * self.scale, self.opp_tail[len(self.opp_tail) - 1 * self.scale].y, 9 * self.scale, 9 * self.scale, self.p1color))
 
         # This conditional statement checks whether or not the apple and  head of the second snake occupy the same spot
         if self.me_head.x == self.apple.x and self.me_head.y == self.apple.y:
@@ -437,25 +461,25 @@ class GameState:
             # The integer value of what will be the previous Y value
             prevY = self.apple.y
             # The integer value of what will be the new current X value. It is randomly generated
-            currX = self.myround(random.randint(0, int(self.w / 10 - 10 * self.director.scale)), 10 * self.director.scale) * 10 + 1 * self.director.scale
+            currX = self.myround(random.randint(0, int(self.w / 10 - 10 * self.scale)), 10 * self.scale) * 10 + 1 * self.scale
             # This loop checks if the previous X value and the newly generated X value are the same, if so it will
             # generate a new one until they no longer match. This stops the apple from spawning in place
             while prevX == currX:
-                currX = self.myround(random.randint(0, int(self.w / 10 - 10 * self.director.scale)), 10 * self.director.scale) * 10 + 1 * self.director.scale
+                currX = self.myround(random.randint(0, int(self.w / 10 - 10 * self.scale)), 10 * self.scale) * 10 + 1 * self.scale
             # The integer value of what will be the new current Y value. It is randomly generated
-            currY = self.myround(random.randint(0, int(self.h / 10 - 10 * self.director.scale)), 10 * self.director.scale) * 10 + 1 * self.director.scale
+            currY = self.myround(random.randint(0, int(self.h / 10 - 10 * self.scale)), 10 * self.scale) * 10 + 1 * self.scale
             # This loop checks if the previous Y value and the newly generated Y value are the same, if so it will
             # generate a new one until they no longer match. This stops the apple from spawning in place
             while prevY == currY:
-                currY = self.myround(random.randint(0, int(self.h / 10 - 10 * self.director.scale)), 10 * self.director.scale) * 10 + 1 * self.director.scale
+                currY = self.myround(random.randint(0, int(self.h / 10 - 10 * self.scale)), 10 * self.scale) * 10 + 1 * self.scale
             # The next 11 lines essentially do what the previous lines have except it checks each segements of the tail
             # so that the apple doesn't spawn in one of their spots
             for i in self.me_tail:
                 if currX == i.x and currY == i.y:
                     spaceEmpty = False
                     while not spaceEmpty and prevX != currX and prevY != currY:
-                        currX = self.myround(random.randint(0, int(self.w / 10 - 10 * self.director.scale)), 10 * self.director.scale) * 10 + 1 * self.director.scale
-                        currY = self.myround(random.randint(0, int(self.h / 10 - 10 * self.director.scale)), 10 * self.director.scale) * 10 + 1 * self.director.scale
+                        currX = self.myround(random.randint(0, int(self.w / 10 - 10 * self.scale)), 10 * self.scale) * 10 + 1 * self.scale
+                        currY = self.myround(random.randint(0, int(self.h / 10 - 10 * self.scale)), 10 * self.scale) * 10 + 1 * self.scale
                         for j in self.tail_2:
                             if currX == j.x and currY == j.y:
                                 spaceEmpty = False
@@ -467,7 +491,7 @@ class GameState:
             self.apple.y = currY
 
             # A new segment is added to the end of the first player's snake
-            self.me_tail.append(Entity(self.me_tail[len(self.me_tail) - 1].x * self.director.scale, self.me_tail[len(self.me_tail) - 1 * self.director.scale].y, 9 * self.director.scale, 9 * self.director.scale, self.director.p2color))
+            self.me_tail.append(Entity(self.me_tail[len(self.me_tail) - 1].x * self.scale, self.me_tail[len(self.me_tail) - 1 * self.scale].y, 9 * self.scale, 9 * self.scale, self.p2color))
 
     # Function for rounding numbers to multiples of a specified number, that number being the "base" value
     def myround(self, x, base=5):

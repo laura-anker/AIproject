@@ -12,6 +12,8 @@ from MCTS import Mcts
 
 move = None
 
+#WASD = player one (green), arrows = player 2 (orange)
+
 class EdiblesTwoPlayer(Scene):
     def __init__(self, director):
         # Should make everything below rely soley on the gamestate: I think?
@@ -25,9 +27,9 @@ class EdiblesTwoPlayer(Scene):
         # A surface with the text "Draw..." printed on it using the font named "font"
         self.draw_txt = director.font.render("Draw...", True, (255, 255, 255))
         # A surface with the text "Player One Wins" printed on it using the font named "font"
-        self.plyronewins_txt = director.font.render("AI wins", True, (255, 255, 255))
+        self.plyronewins_txt = director.font.render("You win", True, (255, 255, 255))
         # A surface with the text "Player Two Wins" printed on it using the font named "font"
-        self.plyrtwowins_txt = director.font.render("You win!", True, (255, 255, 255))
+        self.plyrtwowins_txt = director.font.render("AI wins!", True, (255, 255, 255))
         # A surface with the text "Draw" printed on it using the font named "font"
         self.plyrdraw_txt = director.font.render("Draw", True, (255, 255, 255))
         # This is a rectangle object with the size being the same as the size of the game window size
@@ -145,7 +147,7 @@ class EdiblesTwoPlayer(Scene):
                 def run_mcts():
                     global move
                     #print("in")
-                    move = mcts.run(0, timestep)
+                    move = mcts.run(10, timestep)
                     print(move)
                     self.mcts_running = False
                 
@@ -156,7 +158,7 @@ class EdiblesTwoPlayer(Scene):
                 mcts_thread.start()
             
             # If MCTS calculation finished, update the snake direction
-            if hasattr(self, 'mcts_running') and not self.mcts_running and move is not None:
+            if hasattr(self, 'mcts_running')and move is not None:
                 # Update the ai snake based on the MCTS result
                 if move == "up":
                     self.dy2 = -10 * self.director.scale

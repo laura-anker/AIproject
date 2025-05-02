@@ -1,4 +1,5 @@
 import pygame
+import copy
 
 # This is the main object of the game
 # This keeps the game on, updates stuff, and draws to the screen as well
@@ -36,6 +37,19 @@ class Director:
         self.index_two = 1
         # An object that keeps track of time
         self.clock = pygame.time.Clock()
+
+    def deep_copy(self):
+        new_director = Director(self.scenes)
+        new_director.scale = self.scale
+        new_director.p1color = self.p1color
+        new_director.p2color = self.p2color
+        new_director.index_one = self.index_one
+        new_director.index_two = self.index_two
+        new_director.fps = self.fps
+        new_director.quit_flag = self.quit_flag
+        new_director.scene = self.scene  
+        return new_director
+        
 
     # The Game Loop
     def loop(self):

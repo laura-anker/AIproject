@@ -128,6 +128,7 @@ class Mcts:
         #print(f"{action}")
         #check that the successor has not already been generated
         max_attempts = 100
+        attempts = 0
         bl = True
         while bl == True:
             bl = False
