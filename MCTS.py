@@ -34,20 +34,25 @@ class Mcts:
             self.backpropogate(result, child)
         #return best action to take by comparing scores of children of the root and picking action of child with greater score
         children_rankings = {}
+        for action in self.root.state.get_legal_actions(2):
+            children_rankings[action] = 0
         # Average scores of actions of children because why the heck not
         for child in self.root.children:
-            ranking = child.totalScore / child.numVisits
-            if children_rankings.get(child) != None:
-                children_rankings[child] = children_rankings[child] + ranking
-            else:
-                children_rankings[child] = ranking
+            children_rankings[child.action] += child.totalScore/child.numVisits
         #     print(f"{child.children=}")
         #     print(f"{child.numVisits=}")
         #     print(f"{child.totalScore=}")
         # print(f"{children_rankings=}")
         # self.print_tree()
-        max_child = max(children_rankings, key=children_rankings.get)
-        return max_child.action
+        maxAction = None
+        maxVal = -10000000
+        for action in children_rankings:
+            if children_rankings[action] > maxVal:
+                print("IN IF")
+                maxVal = children_rankings[action]
+                maxAction = action
+        #max_child = max(children_rankings, key=children_rankings.get)
+        return maxAction
     
     def print_tree(self):
         self.print_tree_level(self.root, 0)
