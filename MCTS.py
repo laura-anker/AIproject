@@ -20,6 +20,9 @@ class Mcts:
         self.root = Node(gameState)
         self.all_nodes = []
         self.all_nodes.append(self.root)
+        self.wins = 0
+        self.losses = 0
+        self.draws = 0
 
     def run(self, loop_time):
         #for some amount of time do a thing
@@ -35,10 +38,11 @@ class Mcts:
         #return best action to take by comparing scores of children of the root and picking action of child with greater score
         children_rankings = {}
         for action in self.root.state.get_legal_actions(2):
-            children_rankings[action] = 0
+            children_rankings[action] = [0, 0]
         # Average scores of actions of children because why the heck not
         for child in self.root.children:
-            children_rankings[child.action] += child.totalScore/child.numVisits
+            children_rankings[child.action][0]  = children_rankings[child.action][0] + child.totalScore
+            children_rankings[child.action][1] = children_rankings[child.action][1] + child.numVisits
         #     print(f"{child.children=}")
         #     print(f"{child.numVisits=}")
         #     print(f"{child.totalScore=}")
@@ -47,11 +51,17 @@ class Mcts:
         maxAction = None
         maxVal = -10000000
         for action in children_rankings:
-            if children_rankings[action] > maxVal:
+            val = 0
+            if children_rankings[action][1] != 0:
+                val = children_rankings[action][0]/children_rankings[action][1]
+            if val > maxVal:
                 print("IN IF")
-                maxVal = children_rankings[action]
+                maxVal = val
                 maxAction = action
         #max_child = max(children_rankings, key=children_rankings.get)
+        '''print(f"{self.wins}")
+        print(f"{self.losses}")
+        print(f"{self.draws}")'''
         return maxAction
     
     def print_tree(self):
@@ -122,7 +132,7 @@ class Mcts:
         # Basically, if we find a endstate here we should just return itself
             # sometimes gameOver isn't set to true, just do it again here
             # I don't want to find out where it's not being set right not...
-        if leaf.state.isWin() or leaf.state.isLose() or leaf.state.isDraw():
+        if leaf.state.get_winner() >= 0:
             leaf.state.gameOver = True
             return leaf
         states = []
@@ -170,11 +180,15 @@ class Mcts:
         # If child is end state, don't simulate
             # we do actually want to accumulate wins/losses/draws on these gameover nodes though
             # so keep this in here
-        if child.state.gameOver:
-            if child.state.isWin():
-                return 1
-            if child.state.isLose():
-                return -1
+        num = child.state.get_winner()
+        if num == 1:
+            self.losses += 1
+            return -1
+        if num == 2:
+            self.wins += 1
+            return 1
+        if num == 0:
+            self.draws+= 1
             return -0.5
         # Should have used recursion here but it is what it is...
         #i think this is where the getRandomSuccessor comes in
@@ -182,6 +196,9 @@ class Mcts:
         random_action = random.choice(potential_actions)
         newState = child.state.generateRandomSuccessor(random_action)
         while newState.gameOver == False:
+            if newState.get_winner() >=0:
+                newState.gameOver = True
+                break
             # What exactly is going on here!? lol I may need help but this
                 # is what I could think of
             potential_actions = newState.get_legal_actions(2)
@@ -190,14 +207,16 @@ class Mcts:
                 # right? Because we want to traverse down the tree
             newState = newState.generateRandomSuccessor(random_action)
         #we should consider how we actually want to score this but this works for now
-        if newState.isWin():
-            #print("win")
-            return 1
-        if newState.isLose():
-            #print("lose")
+        num = newState.get_winner()
+        if num == 1:
+            self.losses += 1
             return -1
-        #print("draw")
-        return -0.5
+        if num == 2:
+            self.wins += 1
+            return 1
+        if num == 0:
+            self.draws += 1
+            return -0.5
 
     #go back up the tree from the child, updating each score using result. 
     # I think just add 1 to all visits and add result to every score?

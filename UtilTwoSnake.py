@@ -285,7 +285,7 @@ class GameState:
                 # the snake that ate it
                 potential_game_state.did_eat()
                 # Check if the game ended. If so, return a state that displays that.
-                if potential_game_state.isWin() or potential_game_state.isDraw() or potential_game_state.isLose():
+                if potential_game_state.get_winner() >=0:
                     potential_game_state.gameOver = True
                 # add the generated potential state to potential_successors
                 potential_successors.append(potential_game_state)
@@ -330,7 +330,7 @@ class GameState:
             # the snake that ate it
             potential_game_state.did_eat()
             # Check if the game ended. If so, return a state that displays that.
-            if potential_game_state.isWin() or potential_game_state.isDraw() or potential_game_state.isLose():
+            if potential_game_state.get_winner() >=0:
                 potential_game_state.gameOver = True
             # add the generated potential state to potential_successors
             potential_successors.append(potential_game_state)
@@ -374,7 +374,7 @@ class GameState:
         # the snake that ate it
         potential_game_state.did_eat()
         # Check if the game ended. If so, return a state that displays that.
-        if potential_game_state.isWin() or potential_game_state.isDraw() or potential_game_state.isLose():
+        if potential_game_state.get_winner() >=0:
             potential_game_state.gameOver = True
         return potential_game_state
 
@@ -496,3 +496,39 @@ class GameState:
     # Function for rounding numbers to multiples of a specified number, that number being the "base" value
     def myround(self, x, base=5):
         return int(base * round(float(x) / base))
+    
+    #0= draw, 2 = ai wins, 1 = player wins, -1 = no wins or losses
+    def get_winner(self):
+        # This conditional statement checks if the head of the two snakes occupy the same space. If so it sets the
+        # player draw variable to true and ends the execution of the method
+        if self.opp_head.x == self.me_head.x and self.opp_head.y == self.me_head.y:
+            #print(f"draw dx1 "+str(self.dx1)+" dx2 "+str(self.dx2)+" dy1 "+str(self.dy1)+" dy2 "+str(self.dy2))
+            return 0 #draw
+        
+        # This loop iterates through each tail segment in the first snake's tail
+        for i in self.opp_tail:
+            # This conditional statement checks if the current tail segment and the head of the second snake occupy the
+            # same space. If so it sets the player one wins variable to true
+            if self.me_head.x == i.x and self.me_head.y == i.y:
+                #print(f"ai wins dx1 "+str(self.dx1)+" dx2 "+str(self.dx2)+" dy1 "+str(self.dy1)+" dy2 "+str(self.dy2))
+                return 1 #player wins
+            # This conditional statement checks if the first snake's head has gone out of bounds and if so then it sets
+            # the player two wins variable to true
+            if self.opp_head.x == i.x and self.opp_head.y == i.y or self.opp_head.x < 0 or self.opp_head.x > self.w or self.opp_head.y < 0 or self.opp_head.y > self.h:
+                #print(f"ai wins dx1 "+str(self.dx1)+" dx2 "+str(self.dx2)+" dy1 "+str(self.dy1)+" dy2 "+str(self.dy2))
+                return 2 #ai wins
+
+        # This loops iterates through each tail segment in the second snake's tail
+        for i in self.me_tail:
+            # This conditional statement checks if the current tail segment and the head of the first snake occupy the
+            # same space. If so it sets the player two wins variable to true
+            if self.opp_head.x == i.x and self.opp_head.y == i.y:
+                #print(f"player wins dx1 "+str(self.dx1)+" dx2 "+str(self.dx2)+" dy1 "+str(self.dy1)+" dy2 "+str(self.dy2))
+                return 2 #ai wins
+            # This conditional statement checks if the second snake's head has gone out of bounds and if so then it sets
+            # the player one wins variable to true
+            if self.me_head.x == i.x and self.me_head.y == i.y or self.me_head.x < 0 or self.me_head.x > self.w or self.me_head.y < 0 or self.me_head.y > self.h:
+                #print(f"player wins dx1 "+str(self.dx1)+" dx2 "+str(self.dx2)+" dy1 "+str(self.dy1)+" dy2 "+str(self.dy2))
+                return 1 #player wins
+            
+        return -1 #no wins or losses yet
