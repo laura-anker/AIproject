@@ -160,7 +160,7 @@ class GameState:
                 possibleActions.append("right")
             # if my snake is not moving on the x-axis (opp_dx == 0) (covered above) 
             # or it is moving left (opp_dx<0) then is can go left
-            if self.opp_dx < 0:
+            if self.opp_dx <= 0:
                 #LEFT
                 #possibleActions.append(((-10 *self.scale), 0))
                 possibleActions.append("left")
@@ -172,7 +172,7 @@ class GameState:
                 possibleActions.append("down")
             # if my snake is not moving on the y-axis (opp_dy == 0) (covered above) 
             # or it is moving up (opp_dy<0) then is can go up
-            if self.opp_dy < 0:
+            if self.opp_dy <= 0:
                 #UP
                 #possibleActions.append((0, (-10 *self.scale)))
                 possibleActions.append("up")
@@ -186,7 +186,7 @@ class GameState:
                 possibleActions.append("right")
             # if my snake is not moving on the x-axis (opp_dx == 0) (covered above) 
             # or it is moving left (opp_dx<0) then is can go left
-            if self.me_dx < 0:
+            if self.me_dx <= 0:
                 #LEFT
                 #possibleActions.append(((-10 *self.scale), 0))
                 possibleActions.append("left")
@@ -198,7 +198,7 @@ class GameState:
                 possibleActions.append("down")
             # if my snake is not moving on the y-axis (opp_dy == 0) (covered above) 
             # or it is moving up (opp_dy<0) then is can go up
-            if self.me_dy < 0:
+            if self.me_dy <= 0:
                 #UP
                 #possibleActions.append((0, (-10 *self.scale)))
                 possibleActions.append("up")
