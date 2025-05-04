@@ -23,6 +23,7 @@ class Mcts:
         self.wins = 0
         self.losses = 0
         self.draws = 0
+        self.aieats = 0
 
     def run(self, loop_time):
         #for some amount of time do a thing
@@ -62,7 +63,41 @@ class Mcts:
         print(f"{self.wins}")
         print(f"{self.losses}")
         print(f"{self.draws}")
+        print(f"{self.aieats}")
         return maxAction
+    
+    #checks if new state matches a state in the tree, if so it makes that the new root, else it initializes 
+    #new tree with new state at root as normal
+    def rebase_tree(self, gameState):
+        if self.root.children is None:
+            self.root = Node(gameState) 
+            self.all_nodes = [self.root]
+            return
+
+        for child in self.root.children:
+            if child.state.is_equal(gameState):
+                print("REBASING TREE")
+                child.parent = None
+                self.root = child
+                self.all_nodes = self.collect_all_nodes(self.root)
+                return
+
+        self.root = Node(gameState)
+        self.all_nodes = [self.root]
+        self.wins = 0
+        self.losses = 0
+        self.draws = 0
+        self.aieats = 0
+
+    #gets all children of node so it can put them in all_nodes when rebasing tree
+    def collect_all_nodes(self, node):
+        nodes = []
+        nodes.append(node)
+        if node.children is not None:
+            for child in node.children:
+                for n in self.collect_all_nodes(child):
+                    nodes.append(n)
+        return nodes
     
     def print_tree(self):
         self.print_tree_level(self.root, 0)
@@ -181,15 +216,19 @@ class Mcts:
             # we do actually want to accumulate wins/losses/draws on these gameover nodes though
             # so keep this in here
         num = child.state.get_winner()
+        aiApple = child.state.get_apple(2)*10
+        #playerApple = child.state.get_apple(1)*10
+        self.aieats +=aiApple/10
+        #self.oppeats += playerApple/-10
         if num == 1:
             self.losses += 1
-            return -1
+            return -1 +aiApple
         if num == 2:
             self.wins += 1
-            return 1
+            return 1 +aiApple
         if num == 0:
             self.draws+= 1
-            return -0.5
+            return -0.5 +aiApple
         # Should have used recursion here but it is what it is...
         #i think this is where the getRandomSuccessor comes in
         potential_actions = child.state.get_legal_actions(2)
@@ -208,15 +247,19 @@ class Mcts:
             newState = newState.generateRandomSuccessor(random_action)
         #we should consider how we actually want to score this but this works for now
         num = newState.get_winner()
+        aiApple = newState.get_apple(2)*10
+        #playerApple = newState.get_apple(1)*10
+        self.aieats +=aiApple/10
+        #self.oppeats += playerApple/-10
         if num == 1:
             self.losses += 1
-            return -1
+            return -1 +aiApple
         if num == 2:
             self.wins += 1
-            return 1
+            return 1 +aiApple
         if num == 0:
             self.draws += 1
-            return -0.5
+            return -0.5 +aiApple
 
     #go back up the tree from the child, updating each score using result. 
     # I think just add 1 to all visits and add result to every score?

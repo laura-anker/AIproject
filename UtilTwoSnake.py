@@ -46,6 +46,8 @@ class GameState:
             self.p1color = None
             self.p2color = None
         self.gameOver = False
+        self.me_apple = 0
+        self.opp_apple = 0
 
     # Just a nice function to have
     def print(self):
@@ -95,18 +97,33 @@ class GameState:
         copied_game_state.p1color = self.p1color
         copied_game_state.p2color = self.p2color
         copied_game_state.gameOver = self.gameOver
+        copied_game_state.me_apple = self.me_apple
+        copied_game_state.opp_apple = self.opp_apple
         return copied_game_state
     
     def is_equal(self, other):
-        if (self.opp_head != other.opp_head):
+        if (self.opp_head.x != other.opp_head.x):
             return False
-        if (self.me_head != other.me_head):
+        if (self.opp_head.y != other.opp_head.y):
             return False
-        if (self.me_tail != other.me_tail):
+        if (self.me_head.x != other.me_head.x):
             return False
-        if (self.opp_tail != other.opp_tail):
+        if (self.me_head.y != other.me_head.y):
             return False
-        if (self.apple != other.apple):
+        if len(self.me_tail) != len(other.me_tail):
+            return False
+        #zip is some funky thing for comparing pairs in iterables by their indexes
+        for seg1, seg2 in zip(self.me_tail, other.me_tail):
+            if seg1.x != seg2.x or seg1.y != seg2.y:
+                return False
+        if len(self.opp_tail) != len(other.opp_tail):
+            return False
+        for seg1, seg2 in zip(self.opp_tail, other.opp_tail):
+            if seg1.x != seg2.x or seg1.y != seg2.y:
+                return False
+        if (self.apple.x != other.apple.x):
+            return False
+        if (self.apple.y != other.apple.y):
             return False
         if (self.opp_dx != other.opp_dx):
             return False
@@ -417,6 +434,7 @@ class GameState:
         spaceEmpty = True
         # This conditional statement checks whether or not the apple and head of the first snake occupy the same spot
         if self.opp_head.x == self.apple.x and self.opp_head.y == self.apple.y:
+            self.opp_apple +=1
             # The integer value of what will be the previous X value
             prevX = self.apple.x
             # The integer value of what will be the previous Y value
@@ -456,6 +474,7 @@ class GameState:
 
         # This conditional statement checks whether or not the apple and  head of the second snake occupy the same spot
         if self.me_head.x == self.apple.x and self.me_head.y == self.apple.y:
+            self.me_apple +=1
             # The integer value of what will be the previous X value
             prevX = self.apple.x
             # The integer value of what will be the previous Y value
@@ -532,3 +551,10 @@ class GameState:
                 return 1 #player wins
             
         return -1 #no wins or losses yet
+    
+    #agent = 1, returns num times player has eaten apple
+    #agent = 2, returns num times ai has eaten apple
+    def get_apple(self, agent):
+        if agent == 1:
+            return self.opp_apple
+        return self.me_apple

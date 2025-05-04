@@ -67,6 +67,8 @@ class EdiblesTwoPlayer(Scene):
         for i in range(1, 3):
             self.tail_2.append(Entity(self.head_2.x + 10 * i * director.scale, self.head_2.y * director.scale, 9 * director.scale, 9 * director.scale, self.director.p2color))
 
+        self.mcts = Mcts(GameState(self))
+
 
     def on_event(self, event):
         # This conditional statement that if either the W key is pressed down and if the first player's snake
@@ -128,7 +130,11 @@ class EdiblesTwoPlayer(Scene):
             self.director.scenes[2] = EdiblesTwoPlayer(self.director)
 
     def on_update(self):
-        timestep = 0.2 # Our code line
+        '''
+        g1 = GameState(self)
+        g2 = GameState(self)
+        print(f"{g1.is_equal(g2)}")'''
+        timestep = 0.3 # Our code line
 
         # The fps (frames per second) is changed to 15
         self.director.fps = 1/timestep
@@ -141,20 +147,21 @@ class EdiblesTwoPlayer(Scene):
             global move
             # Check if we need to start a new MCTS calculation
             #if not hasattr(self, 'mcts_running') or not self.mcts_running:
-            mcts = Mcts(GameState(self))
+            #mcts = Mcts(GameState(self))
             def run_mcts():
                 global move
                 #print("in")
-                move = mcts.run(timestep)
-                print(f"{mcts.root.state.get_legal_actions(2)=}")
-                print(f"{len(mcts.root.children)=}")
-                for child in mcts.root.children:
+                self.mcts.rebase_tree(GameState(self))
+                move = self.mcts.run(timestep)
+                print(f"{self.mcts.root.state.get_legal_actions(2)=}")
+                print(f"{len(self.mcts.root.children)=}")
+                for child in self.mcts.root.children:
                     print(f"{child.action=}")
                     print(f"{child.totalScore=}")
                     print(f"{child.numVisits=}")
                 print(f"{move=}")
                 if move == None:
-                    move = random.choice(mcts.root.state.get_legal_actions(2))
+                    move = random.choice(self.mcts.root.state.get_legal_actions(2))
                     print(f"{move=}")
                 #self.mcts_running = False
                 
