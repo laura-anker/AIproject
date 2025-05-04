@@ -452,7 +452,7 @@ class GameState:
             self.apple.y = currY
 
             # A new segment is added to the end of the first player's snake
-            self.opp_tail.append(Entity(self.opp_tail[len(self.tail_1) - 1].x * self.scale, self.opp_tail[len(self.opp_tail) - 1 * self.scale].y, 9 * self.scale, 9 * self.scale, self.p1color))
+            self.opp_tail.append(Entity(self.opp_tail[len(self.opp_tail) - 1].x * self.scale, self.opp_tail[len(self.opp_tail) - 1 * self.scale].y, 9 * self.scale, 9 * self.scale, self.p1color))
 
         # This conditional statement checks whether or not the apple and  head of the second snake occupy the same spot
         if self.me_head.x == self.apple.x and self.me_head.y == self.apple.y:

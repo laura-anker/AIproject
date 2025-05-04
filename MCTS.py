@@ -59,9 +59,9 @@ class Mcts:
                 maxVal = val
                 maxAction = action
         #max_child = max(children_rankings, key=children_rankings.get)
-        '''print(f"{self.wins}")
+        print(f"{self.wins}")
         print(f"{self.losses}")
-        print(f"{self.draws}")'''
+        print(f"{self.draws}")
         return maxAction
     
     def print_tree(self):
