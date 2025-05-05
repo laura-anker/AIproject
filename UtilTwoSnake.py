@@ -499,7 +499,7 @@ class GameState:
                     while not spaceEmpty and prevX != currX and prevY != currY:
                         currX = self.myround(random.randint(0, int(self.w / 10 - 10 * self.scale)), 10 * self.scale) * 10 + 1 * self.scale
                         currY = self.myround(random.randint(0, int(self.h / 10 - 10 * self.scale)), 10 * self.scale) * 10 + 1 * self.scale
-                        for j in self.tail_2:
+                        for j in self.me_tail:
                             if currX == j.x and currY == j.y:
                                 spaceEmpty = False
                                 break

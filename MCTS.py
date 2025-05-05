@@ -218,7 +218,7 @@ class Mcts:
         num = child.state.get_winner()
         aiApple = child.state.get_apple(2)*500
         #playerApple = child.state.get_apple(1)*10
-        self.aieats +=aiApple/10
+        self.aieats +=aiApple/500
         #self.oppeats += playerApple/-10
         if num == 1:
             self.losses += 1
@@ -249,7 +249,7 @@ class Mcts:
         num = newState.get_winner()
         aiApple = newState.get_apple(2)*500
         #playerApple = newState.get_apple(1)*10
-        self.aieats +=aiApple/10
+        self.aieats +=aiApple/500
         #self.oppeats += playerApple/-10
         if num == 1:
             self.losses += 1
