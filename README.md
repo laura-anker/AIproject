@@ -1,5 +1,7 @@
 # Report
 
+To run our game use "python Runner.py" and select the two-player option. Use WASD to control your snake. 
+
 Problem:
 We decided to create a 2-player snake game where one of the snakes is controlled by a player and the other snake is an AI. 
 
