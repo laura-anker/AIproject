@@ -134,7 +134,7 @@ class EdiblesTwoPlayer(Scene):
         g1 = GameState(self)
         g2 = GameState(self)
         print(f"{g1.is_equal(g2)}")'''
-        timestep = 5 # Our code line
+        timestep = 0.4 # Our code line
 
         # The fps (frames per second) is changed to 15
         self.director.fps = 1/timestep
